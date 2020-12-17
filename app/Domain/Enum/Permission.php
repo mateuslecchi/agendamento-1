@@ -1,4 +1,6 @@
 <?php
+/** @noinspection UnknownInspectionInspection */
+/** @noinspection PhpUnused */
 
 namespace App\Domain\Enum;
 
@@ -7,6 +9,11 @@ use MyCLabs\Enum\Enum;
 
 class Permission extends Enum
 {
+    private const USER_SHOW = 'user::show';
+    private const USER_CREATE = 'user::create';
+    private const USER_EDIT = 'user::edit';
+    private const USER_DELETE = 'user::delete';
+
     private const GROUP_SHOW = 'group::show';
     private const GROUP_CREATE = 'group::create';
     private const GROUP_EDIT = 'group::edit';
@@ -40,6 +47,28 @@ class Permission extends Enum
     private const MENU_ENVIRONMENTS = 'menu::environments';
     private const MENU_SCHEDULES = 'menu::schedules';
 
+    /** User */
+    #[Pure] public static function USER_SHOW(): self
+    {
+        return new self(self::USER_SHOW);
+    }
+
+    #[Pure] public static function USER_CREATE(): self
+    {
+        return new self(self::USER_CREATE);
+    }
+
+    #[Pure] public static function USER_EDIT(): self
+    {
+        return new self(self::USER_EDIT);
+    }
+
+    #[Pure] public static function USER_DELETE(): self
+    {
+        return new self(self::USER_DELETE);
+    }
+
+    /** Group */
     #[Pure] public static function GROUP_SHOW(): self
     {
         return new self(self::GROUP_SHOW);

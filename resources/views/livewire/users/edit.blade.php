@@ -20,6 +20,7 @@
                     <x-input id="password_edit" type="password" class="block mt-1 w-full"
                              wire:model.defer="user.password"/>
                 </div>
+                @if($blockEditGroupIfTheLastAdministrator)
                 <div class="mt-4">
                     <x-label for="group_edit" :value="Str::ucfirst(__('label.group'))"/>
                     <select id="group_edit" class="block mt-1 w-full"
@@ -30,7 +31,9 @@
                         @empty
                             <option value="0">{{ __('text.no-record-found') }}</option>
                         @endforelse
-                    </select></div>
+                    </select>
+                </div>
+                @endif
             </x-slot>
             <!-- footer -->
             <x-slot name="footer">

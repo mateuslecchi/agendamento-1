@@ -1,16 +1,24 @@
-<?php
+<?php /** @noinspection PhpMissingFieldTypeInspection */
 
 namespace App\Http\Livewire\Users;
 
+use App\Domain\Enum\AdminGroup;
 use App\Domain\Enum\GroupRoles;
+use App\Domain\Policy;
 use App\Models\Group;
 use App\Models\GroupMember;
 use App\Models\User;
+use App\Traits\AuthenticatedUser;
 use App\Traits\AuthorizesRoleOrPermission;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
+use JetBrains\PhpStorm\ArrayShape;
 
 class Edit extends Create
 {
+    use AuthenticatedUser;
     use AuthorizesRoleOrPermission;
 
     protected $listeners = [
@@ -19,18 +27,19 @@ class Edit extends Create
 
     public function mount(): void
     {
-        $this->authorizeRoleOrPermission([
-            GroupRoles::ADMIN()->getName()
-        ]);
+        Policy::users_edit_mount();
     }
 
-    public function render()
+    public function render(): View|Factory|Application
     {
+        $admins = Group::find(AdminGroup::ID()->getValue())?->groupMembers();
         return view('livewire.users.edit', [
-            'groups' => Group::all()
+            'groups' => Group::all(),
+            'blockEditGroupIfTheLastAdministrator' => ($admins->count() !== 1 || $admins->first()->id !== $this?->user?->id)
         ]);
     }
 
+    #[ArrayShape(['user.name' => "string[]", 'user.email' => "array", 'user.password' => "string[]", 'group.id' => "array"])]
     protected function editRules(): array
     {
         return [
@@ -49,7 +58,7 @@ class Edit extends Create
         ];
     }
 
-    public function load(User $user)
+    public function load(User $user): void
     {
         if (is_null($user)) {
             $this->notifyError('text.record-found-failed');
@@ -105,11 +114,16 @@ class Edit extends Create
 
         if ($this->user->group->id !== $this->group->id) {
             $groupMember = GroupMember::findByUser($this->user->id);
+
+            if(is_null($groupMember)) { return false; }
             $groupMember->groups_id = $this->group->id;
 
-            $this->user->syncRoles(GroupRoles::getByValue(
+            $groupRole = GroupRoles::getByValue(
                 Group::find($this->group->id)?->group_roles_id
-            )->getName());
+            );
+
+            if(is_null($groupRole)) { return false; }
+            $this->user->syncRoles($groupRole->getName());
 
             return $groupMember->save();
         }

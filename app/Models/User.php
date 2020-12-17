@@ -18,6 +18,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $created_at
  * @property string $updated_at
  * @property GroupMember[] $groupMembers
+ * @property mixed group
  */
 class User extends Authenticatable
 {

@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property GroupMember[] $groupMembers
  * @method static make(array $array)
  * @method static where(string $string, string $string1, mixed $getValue)
+ * @method static find(int $id)
  */
 class Group extends Model
 {
