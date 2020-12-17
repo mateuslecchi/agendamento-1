@@ -28,6 +28,7 @@ class Edit extends Create
     public function mount(): void
     {
         Policy::users_edit_mount();
+        $this->setEmptyUser();
     }
 
     public function render(): View|Factory|Application

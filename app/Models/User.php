@@ -19,6 +19,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $updated_at
  * @property GroupMember[] $groupMembers
  * @property mixed group
+ * @method static make(array $array)
  */
 class User extends Authenticatable
 {
@@ -69,11 +70,13 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\GroupMember', 'users_id');
     }
 
+    /** @noinspection PhpUndefinedMethodInspection */
     public function getGroupAttribute(): null | Group
     {
         return $this->groupMembers?->first()?->group;
     }
 
+    /** @noinspection PhpUndefinedMethodInspection */
     public function getMemberAttribute(): null | GroupMember
     {
         return $this->groupMembers?->first();

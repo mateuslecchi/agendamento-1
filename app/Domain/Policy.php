@@ -14,7 +14,15 @@ class Policy
     {
         self::authRoleOrPermission([
             GroupRoles::ADMIN()->getName(),
-            Permission::GROUP_SHOW()->getValue()
+            Permission::USER_EDIT()->getValue()
+        ]);
+    }
+
+    public static function users_show_mount(): void
+    {
+        self::authRoleOrPermission([
+            GroupRoles::ADMIN()->getName(),
+            Permission::USER_SHOW()->getValue()
         ]);
     }
 

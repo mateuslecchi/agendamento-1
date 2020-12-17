@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Users;
 
 use App\Domain\Enum\GroupRoles;
+use App\Domain\Policy;
 use App\Models\User;
 use App\Traits\AuthenticatedUser;
 use App\Traits\AuthorizesRoleOrPermission;
@@ -20,11 +21,10 @@ class Show extends Component
 
     public function mount(): void
     {
-        $this->authorizeRoleOrPermission([
-            GroupRoles::ADMIN()->getName()
-        ]);
+       Policy::users_show_mount();
     }
 
+    /** @noinspection NullPointerExceptionInspection */
     public function render()
     {
         return view('livewire.users.show', [
