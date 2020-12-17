@@ -1,12 +1,14 @@
 <?php
+/** @noinspection UnknownInspectionInspection */
+/** @noinspection SpellCheckingInspection */
+
+/** @noinspection PhpMissingFieldTypeInspection */
 
 namespace App\Models;
 
-use App\Domain\Enum\GroupRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Collection;
 
 /**
  * @property integer $id
@@ -17,6 +19,8 @@ use Illuminate\Support\Collection;
  * @property GroupRole $groupRole
  * @property Environment[] $environments
  * @property GroupMember[] $groupMembers
+ * @method static make(array $array)
+ * @method static where(string $string, string $string1, mixed $getValue)
  */
 class Group extends Model
 {
@@ -31,12 +35,6 @@ class Group extends Model
      * @var array
      */
     protected $fillable = ['group_roles_id', 'name', 'created_at', 'updated_at'];
-
-    public static function byRole(GroupRoles $groupRole): Collection
-    {
-        return self::where('group_roles_id', '=', $groupRole->getValue())
-            ->get();
-    }
 
     /**
      * @return BelongsTo
@@ -62,6 +60,7 @@ class Group extends Model
         return $this->hasMany(GroupMember::class, 'groups_id');
     }
 
+    /** @noinspection PhpUnused */
     public function getRoleAttribute(): GroupRole
     {
         return $this->groupRole;

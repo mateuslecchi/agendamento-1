@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection SpellCheckingInspection */
+
+/** @noinspection PhpMissingFieldTypeInspection */
 
 namespace App\Models;
 
@@ -22,6 +24,9 @@ use Illuminate\Support\Collection;
  * @property string $updated_at
  * @property Environment $environment
  * @property Situation $situation
+ * @method static make(array $array)
+ * @method static where(string $string, string $string1, int $id)
+ * @method static whereIn(string $string, $all)
  */
 class Schedule extends Model
 {
@@ -54,9 +59,10 @@ class Schedule extends Model
 
     public static function byGroupBuilder(Group $group): Builder
     {
-        return self::where('by', $group->id);
+        return self::where('by','=', $group->id);
     }
 
+    /** @noinspection PhpUndefinedMethodInspection */
     public static function byGroupEnvironmentBuilder(Group $group): Builder
     {
         return self::whereIn('environments_id', $group->environments->pluck('id')->all());
@@ -64,10 +70,7 @@ class Schedule extends Model
 
     public static function byGroupAndBlockBuilder(Group $group, Block $block): Builder
     {
-        return self::where(
-            'by',
-            $group->id
-        )->whereIn(
+        return self::where('by', '=', $group->id)->whereIn(
             'environments_id',
             Environment::byBlock($block)
                 ?->pluck('id')
@@ -82,6 +85,7 @@ class Schedule extends Model
 
     /**
      * @return Group|null
+     * @noinspection PhpIncompatibleReturnTypeInspection
      */
     public function forGroup(): ?Group
     {
@@ -90,6 +94,8 @@ class Schedule extends Model
 
     /**
      * @return Group|null
+     * @noinspection PhpIncompatibleReturnTypeInspection
+     * @noinspection PhpUnused
      */
     public function byGroup(): ?Group
     {

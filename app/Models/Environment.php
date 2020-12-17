@@ -1,9 +1,15 @@
 <?php
+/** @noinspection UnknownInspectionInspection */
+/** @noinspection SpellCheckingInspection */
+
+/** @noinspection PhpMissingFieldTypeInspection */
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property integer $id
@@ -15,6 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Block $block
  * @property Group $group
  * @property Schedule[] $schedules
+ * @method static make(array $array)
+ * @method static where(string $string, string $string1, int $id)
  */
 class Environment extends Model
 {
@@ -41,29 +49,32 @@ class Environment extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function block()
+    public function block(): BelongsTo
     {
-        return $this->belongsTo('App\Models\Block', 'blocks_id');
+        return $this->belongsTo(Block::class, 'blocks_id');
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function group()
+    public function group(): BelongsTo
     {
-        return $this->belongsTo('App\Models\Group', 'groups_id');
+        return $this->belongsTo(Group::class, 'groups_id');
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function schedules()
+    public function schedules(): HasMany
     {
-        return $this->hasMany('App\Models\Schedule', 'environments_id');
+        return $this->hasMany(Schedule::class, 'environments_id');
     }
 
+    /** @noinspection PhpIncompatibleReturnTypeInspection
+     * @noinspection PhpUnused
+     */
     public function getBlockAttribute(): null | Block
     {
         return $this->block()?->first();

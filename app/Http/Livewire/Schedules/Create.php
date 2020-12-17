@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpMissingFieldTypeInspection */
 
 namespace App\Http\Livewire\Schedules;
 
@@ -20,6 +20,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use JetBrains\PhpStorm\ArrayShape;
 use Livewire\Component;
 
 class Create extends Component
@@ -113,6 +114,7 @@ class Create extends Component
         Policy::schedule_create_load();
 
         $this->environment = $environment;
+        $this->group->id = $this->authGroup()->id;
         $this->modalToggle();
     }
 
@@ -198,14 +200,12 @@ class Create extends Component
             $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
             $isApproved = true;
 
+        } else if ($this->authGroup()->id === $this->environment->group->id) {
+            $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
+            $isApproved = true;
         } else {
-            if ($this->authGroup()->id === $this->environment->group->id) {
-                $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
-                $isApproved = true;
-            } else {
-                $this->schedule->situations_id = Situation::PENDING()->getValue();
-                $isApproved = false;
-            }
+            $this->schedule->situations_id = Situation::PENDING()->getValue();
+            $isApproved = false;
         }
 
         $status = $this->schedule->save();
@@ -250,7 +250,7 @@ class Create extends Component
         $this->emit('update_schedule_display_content');
     }
 
-    protected function rules(): array
+    #[ArrayShape(['schedule.date' => "string[]", 'schedule.start_time' => "string[]", 'schedule.end_time' => "string[]", 'group.id' => "string[]"])] protected function rules(): array
     {
         return [
             'schedule.date' => [
@@ -267,25 +267,6 @@ class Create extends Component
                 'required'
             ],
             'group.id' => [
-                'required'
-            ],
-        ];
-    }
-
-    protected function saveRules(): array
-    {
-        return [
-            'schedule.date' => [
-                'required',
-                'after_or_equal:' . date('Y-m-d'),
-                'before_or_equal:' . Carbon::parse(date('Y-m-d'))
-                    ->addDays(90)
-                    ->format('Y-m-d')
-            ],
-            'schedule.start_time' => [
-                'required'
-            ],
-            'schedule.end_time' => [
                 'required'
             ],
         ];
