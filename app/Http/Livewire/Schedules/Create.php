@@ -250,6 +250,32 @@ class Create extends Component
         $this->emit('update_schedule_display_content');
     }
 
+    #[ArrayShape(['schedule.date.required' => "mixed", 'schedule.date.after_or_equal' => "mixed", 'schedule.date.before_or_equal' => "mixed", 'schedule.start_time.required' => "mixed", 'schedule.end_time.required' => "mixed", 'group.id.required' => "mixed"])] protected function messages(): array
+    {
+        return [
+            'schedule.date.required' => __('validation.required', [
+                'attribute' =>  __('label.date')
+            ]),
+            'schedule.date.after_or_equal' => __('validation.after_or_equal', [
+                'attribute' =>  __('label.date'),
+                'date' => now()->format('d/m/Y')
+            ]),
+            'schedule.date.before_or_equal' => __('validation.before_or_equal', [
+                'attribute' =>  __('label.date'),
+                'date' => now()->addDays(90)->format('d/m/Y')
+            ]),
+            'schedule.start_time.required' => __('validation.required', [
+                'attribute' =>  __('label.time.start')
+            ]),
+            'schedule.end_time.required' => __('validation.required', [
+                'attribute' =>  __('label.time.end')
+            ]),
+            'group.id.required' => __('validation.required', [
+                'attribute' =>  __('label.for')
+            ]),
+        ];
+    }
+
     #[ArrayShape(['schedule.date' => "string[]", 'schedule.start_time' => "string[]", 'schedule.end_time' => "string[]", 'group.id' => "string[]"])] protected function rules(): array
     {
         return [
