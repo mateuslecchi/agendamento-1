@@ -7,6 +7,11 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        <!-- favicon -->
+        <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon.ico">
+        <link rel="icon" type="image/x-icon" sizes="16x16" href="/favicon.ico">
+        <link rel="apple-touch-icon" type="image/x-icon" sizes="180x180" href="/favicon.ico">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
         @livewireStyles
