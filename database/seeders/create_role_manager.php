@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUndefinedMethodInspection */
 
 namespace Database\Seeders;
 
@@ -29,8 +30,8 @@ class create_role_manager extends Seeder
             Permission::SCHEDULE_SHOW()->getValue(),
             Permission::SCHEDULE_CREATE()->getValue(),
             Permission::SCHEDULE_EDIT()->getValue(),
-            Permission::SCHEDULE_SET_GROUP(),
-            Permission::SCHEDULE_SET_FREQUENCY(),
+            Permission::SCHEDULE_SET_GROUP()->getValue(),
+            Permission::SCHEDULE_SET_FREQUENCY()->getValue(),
 
             Permission::MENU_DASHBOARD()->getValue(),
             Permission::MENU_ENVIRONMENTS()->getValue(),
