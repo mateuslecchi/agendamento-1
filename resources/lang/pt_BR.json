@@ -91,5 +91,6 @@
     "mail.schedule.subject.approved": "agendamento aprovado",
     "text.custom.approved.by": "aprovado por :name",
     "mail.schedule.subject.pending": "agendamento pendente",
-    "text.custom.pending.by": "aguardando aprovação por :group"
+    "text.custom.pending.by": "aguardando aprovação por :group",
+    "text.custom.deletion-of-registration-started": "exclusão de registro iniciada"
 }

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $created_at
  * @property string $updated_at
  * @property Environment[] $environments
+ * @method static make(array $array)
  */
 class Block extends Model
 {

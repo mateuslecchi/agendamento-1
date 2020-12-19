@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpMissingFieldTypeInspection */
 
 namespace App\Http\Livewire\Blocks;
 
@@ -10,6 +11,9 @@ use App\Traits\AuthorizesRoleOrPermission;
 use App\Traits\ModalCtrl;
 use App\Traits\NotifyBrowser;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Delete extends Component
@@ -26,14 +30,14 @@ class Delete extends Component
         'delete_block_confirmation' => 'delete'
     ];
 
-    public function render()
+    public function render(): Factory|View|Application
     {
         return view('livewire.blocks.delete', [
             'block' => $this->block
         ]);
     }
 
-    public function mount()
+    public function mount(): void
     {
         Policy::blocks_delete_mount();
         $this->setEmptyBlock();
@@ -44,7 +48,7 @@ class Delete extends Component
         $this->block = Block::make([]);
     }
 
-    public function load(Block $block)
+    public function load(Block $block): void
     {
         Policy::blocks_delete_load();
 
@@ -57,7 +61,7 @@ class Delete extends Component
         $this->modalToggle();
     }
 
-    public function delete(Block $block)
+    public function delete(Block $block): void
     {
         Policy::blocks_delete_delete();
 
@@ -80,13 +84,9 @@ class Delete extends Component
         try {
 
             BlockExclusion::dispatch($this->authUser()->name, $this->block);
-            //$status = $this->block->delete();
-            $this->notifyAlert('Processo de exclusão iniciado');
-            /*$this->notifySuccessOrError(
-                status: $status,
-                success: 'text.delete.success',
-                error: 'text.delete.error'
-            );*/
+
+            $this->notifyAlert('text.custom.deletion-of-registration-started');
+
         } catch (Exception) {
             $this->notifyError('text.delete.error');
             $this->finally();
@@ -95,14 +95,14 @@ class Delete extends Component
         $this->finally();
     }
 
-    protected function finally()
+    protected function finally(): void
     {
         $this->updateView();
         $this->modalToggle();
         $this->setEmptyBlock();
     }
 
-    protected function updateView()
+    protected function updateView(): void
     {
         $this->emit('update_block_display_content');
     }
