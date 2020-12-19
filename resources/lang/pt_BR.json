@@ -72,6 +72,7 @@
     "text.custom.schedule.description": "<b>Local:</b> :environment - :block<br><b>Data:</b> :date<br><b>Horário:</b> :start_time às :end_time<br><b>Por:</b> :user<br>",
     "text.custom.cancel.confirmation": "tem certeza que deseja cancelar?",
     "text.custom.approve.confirmation": "tem certeza que deseja aprova?",
+    "label.custom.violation-of-group-integrity": ":text",
     "text.forgot-password": "esqueceu sua senha? Sem problemas. Basta nos informar seu endereço de e-mail e nós enviaremos um link de redefinição de senha que permitirá que você escolha uma nova.",
     "label.custom.new": "novo :name",
     "label.custom.edit": "edita :name",

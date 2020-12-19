@@ -1,9 +1,13 @@
 <?php
+/** @noinspection SpellCheckingInspection */
+/** @noinspection PhpMissingFieldTypeInspection */
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property integer $id
@@ -12,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Group $group
  * @property User $user
  * @property Schedule[] $schedules
+ * @method static create(array $array)
+ * @method static where(string $string, string $string1, int $id)
  */
 class GroupMember extends Model
 {
@@ -28,27 +34,27 @@ class GroupMember extends Model
     protected $fillable = ['groups_id', 'users_id'];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function group()
+    public function group(): BelongsTo
     {
-        return $this->belongsTo('App\Models\Group', 'groups_id');
+        return $this->belongsTo(Group::class, 'groups_id');
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
-        return $this->belongsTo('App\Models\User', 'users_id');
+        return $this->belongsTo(User::class, 'users_id');
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function schedules()
+    public function schedules(): HasMany
     {
-        return $this->hasMany('App\Models\Schedule', 'group_members_id');
+        return $this->hasMany(Schedule::class, 'group_members_id');
     }
 
     public static function findByUser(int $id): null | GroupMember

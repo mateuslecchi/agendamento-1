@@ -20,9 +20,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property GroupRole $groupRole
  * @property Environment[] $environments
  * @property GroupMember[] $groupMembers
+ * @property mixed role
  * @method static make(array $array)
  * @method static where(string $string, string $string1, mixed $getValue)
  * @method static find(int $id)
+ * @method static create(array $array)
  */
 class Group extends Model
 {
