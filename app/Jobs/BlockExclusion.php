@@ -71,16 +71,14 @@ class BlockExclusion implements ShouldQueue
     public function getSimpleData(): array
     {
         return $this->block->environments()->get()->map(function (Environment $environment) {
-            return $environment->schedules()->get()->map(function (Schedule $schedule) {
-                $date = Carbon::parse($schedule->date);
-                $today = Carbon::parse(now()->format('Y-m-d'));
-
-                if ((
-                        $date->isToday() || $date->isAfter($today)
-                    ) && (
-                        $schedule->situations_id === Situation::PENDING()->getValue() ||
-                        $schedule->situations_id === Situation::CONFIRMED()->getValue()
-                    )) {
+            return $environment->schedules()
+                ->where('date', '>=', now()->format('Y-m-d'))
+                ->whereIn('situations_id', [
+                    Situation::CONFIRMED()->getValue(),
+                    Situation::PENDING()->getValue()
+                ])
+                ->get()
+                ->map(function (Schedule $schedule) {
                     $users = GroupMember::findByGroup($schedule->forGroup())->map(function (GroupMember $member) {
                         return $member->user->toArray();
                     });
@@ -88,7 +86,7 @@ class BlockExclusion implements ShouldQueue
                     $schedule->by = $schedule->byGroup()?->name;
                     $schedule->users = $users->toArray();
                     return $schedule->toArray();
-                }
+
             });
         })->toArray();
     }
