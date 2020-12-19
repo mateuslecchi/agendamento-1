@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,7 +37,18 @@ class Environment extends Model
     /**
      * @var array
      */
-    protected $fillable = ['groups_id', 'blocks_id', 'name', 'created_at', 'updated_at'];
+    protected $fillable = ['groups_id', 'blocks_id', 'name', 'deleted', 'created_at', 'updated_at'];
+
+    protected $with = [
+        'block',
+        'group',
+    ];
+
+    public function newQuery(): Builder
+    {
+        return parent::newQuery()
+            ->where('deleted', '=', 0);
+    }
 
     public static function byBlock(Block $block): Collection
     {

@@ -3,7 +3,9 @@
 namespace App\Http\Livewire\Blocks;
 
 use App\Domain\Policy;
+use App\Jobs\BlockExclusion;
 use App\Models\Block;
+use App\Traits\AuthenticatedUser;
 use App\Traits\AuthorizesRoleOrPermission;
 use App\Traits\ModalCtrl;
 use App\Traits\NotifyBrowser;
@@ -15,6 +17,7 @@ class Delete extends Component
     use ModalCtrl;
     use NotifyBrowser;
     use AuthorizesRoleOrPermission;
+    use AuthenticatedUser;
 
     public Block $block;
 
@@ -75,13 +78,15 @@ class Delete extends Component
         }
 
         try {
-            $status = $this->block->delete();
 
-            $this->notifySuccessOrError(
+            BlockExclusion::dispatch($this->authUser()->name, $this->block);
+            //$status = $this->block->delete();
+            $this->notifyAlert('Processo de exclusão iniciado');
+            /*$this->notifySuccessOrError(
                 status: $status,
                 success: 'text.delete.success',
                 error: 'text.delete.error'
-            );
+            );*/
         } catch (Exception) {
             $this->notifyError('text.delete.error');
             $this->finally();

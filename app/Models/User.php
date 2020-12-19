@@ -1,8 +1,13 @@
 <?php
+/** @noinspection UnknownInspectionInspection */
+/** @noinspection SpellCheckingInspection */
+/** @noinspection PhpMissingFieldTypeInspection */
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -62,21 +67,30 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function groupMembers()
+    public function newQuery(): Builder
     {
-        return $this->hasMany('App\Models\GroupMember', 'users_id');
+        return parent::newQuery()
+            ->where('deleted', '=', 0);
+    }
+    /**
+     * @return HasMany
+     */
+    public function groupMembers(): HasMany
+    {
+        return $this->hasMany(GroupMember::class, 'users_id');
     }
 
-    /** @noinspection PhpUndefinedMethodInspection */
+    /** @noinspection PhpUndefinedMethodInspection
+     * @noinspection PhpUnused
+     */
     public function getGroupAttribute(): null | Group
     {
         return $this->groupMembers?->first()?->group;
     }
 
-    /** @noinspection PhpUndefinedMethodInspection */
+    /** @noinspection PhpUndefinedMethodInspection
+     * @noinspection PhpUnused
+     */
     public function getMemberAttribute(): null | GroupMember
     {
         return $this->groupMembers?->first();

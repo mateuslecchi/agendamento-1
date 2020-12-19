@@ -2,8 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Schedule;
-use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -14,27 +13,30 @@ class ScheduleCancel extends Mailable
     use Queueable;
     use SerializesModels;
 
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
-    public function __construct(private User $current, private User $toUser, private Schedule $schedule)
+    public function __construct(
+        private string $sendBy,
+        private string $toEmail,
+        private array $schedule,
+        private ?string $toName = null
+    )
     {
         //
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
+    public function build(): ScheduleCancel
     {
         $this->subject(Str::ucfirst(__('mail.schedule.subject.cancel')));
 
-        $this->to($this->toUser);
+        $this->to($this->toEmail, $this->toName);
 
-        return $this->markdown('mail.schedule.cancel', ['schedule' => $this->schedule, 'by' => $this->current->name]);
+        return $this->markdown('mail.schedule.cancel', [
+            'environment' => Str::ucfirst(__($this->schedule['environment'])),
+            'block' => Str::ucfirst(__($this->schedule['block'])),
+            'date' => Carbon::parse($this->schedule['date'])->format('d/m/Y'),
+            'start_time' => Str::replaceLast(':00', '', $this->schedule['start_time']),
+            'end_time' => Str::replaceLast(':00', '', $this->schedule['end_time']),
+            'user' => Str::ucfirst(__($this->schedule['user'])),
+            'sendBy' => Str::ucfirst(__($this->sendBy))
+        ]);
     }
 }

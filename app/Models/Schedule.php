@@ -52,6 +52,11 @@ class Schedule extends Model
         'updated_at'
     ];
 
+    protected $with = [
+        'environment',
+        'situation'
+    ];
+
     public static function byEnvironmentBuilder(Environment $environment): Builder
     {
         return self::where('environments_id', '=', $environment->id);

@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -36,6 +37,12 @@ class Group extends Model
      * @var array
      */
     protected $fillable = ['group_roles_id', 'name', 'created_at', 'updated_at'];
+
+    public function newQuery(): Builder
+    {
+        return parent::newQuery()
+            ->where('deleted', '=', 0);
+    }
 
     /**
      * @return BelongsTo

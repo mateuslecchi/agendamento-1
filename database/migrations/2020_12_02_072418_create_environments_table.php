@@ -17,6 +17,7 @@ class CreateEnvironmentsTable extends Migration
             $table->bigInteger('id', true);
             $table->unsignedBigInteger('groups_id')->index();
             $table->unsignedInteger('blocks_id')->index();
+            $table->boolean('deleted')->default(false);
             $table->string('name');
             $table->timestamps();
         });
