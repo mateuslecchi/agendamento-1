@@ -6,7 +6,10 @@ use App\Domain\Enum\GroupRoles;
 use App\Models\Group;
 use App\Models\GroupMember;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
+use League\CommonMark\Block\Element\ThematicBreak;
 use TypeError;
 
 trait AuthenticatedUser
@@ -43,9 +46,14 @@ trait AuthenticatedUser
         }
     }
 
+    /** @noinspection PhpInconsistentReturnPointsInspection */
     protected function authUser(): User
     {
-        return User::find(auth()->id());
+        try{
+            return User::find(auth()->id());
+        } catch (TypeError){
+            auth()->logout();
+        }
     }
 
     protected function authGroupRole(): GroupRoles

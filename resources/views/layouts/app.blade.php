@@ -39,5 +39,13 @@
             </main>
         </div>
         @livewireScripts
+    <script>
+        window.livewire.onError(statusCode => {
+            if (statusCode === 419 || statusCode === 500) {
+                window.location.reload();
+                return false
+            }
+        })
+    </script>
     </body>
 </html>
