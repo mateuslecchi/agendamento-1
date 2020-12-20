@@ -47,7 +47,9 @@ class Environment extends Model
     public function newQuery(): Builder
     {
         return parent::newQuery()
-            ->where('deleted', '=', 0);
+            ->where('deleted', '=', 0)
+            ->orderBy('name')
+            ->orderBy('blocks_id');
     }
 
     public static function byBlock(Block $block): Collection

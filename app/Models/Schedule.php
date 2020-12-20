@@ -57,6 +57,13 @@ class Schedule extends Model
         'situation'
     ];
 
+    public function newQuery(): Builder
+    {
+        return parent::newQuery()
+            ->orderBy('date')
+            ->orderBy('start_time');
+    }
+
     public static function byEnvironmentBuilder(Environment $environment): Builder
     {
         return self::where('environments_id', '=', $environment->id);

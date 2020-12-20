@@ -43,7 +43,8 @@ class Group extends Model
     public function newQuery(): Builder
     {
         return parent::newQuery()
-            ->where('deleted', '=', 0);
+            ->where('deleted', '=', 0)
+            ->orderBy('name');
     }
 
     /**
