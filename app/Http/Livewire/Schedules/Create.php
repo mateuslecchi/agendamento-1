@@ -132,9 +132,23 @@ class Create extends Component
             $this->runDry();
         }
 
+        $status = true;
         do {
-            $this->saveSchedule();
+            $status =  $status && $this->saveSchedule();
+            if (!$status) {
+                $this->notifyError(__('label.custom.schedule.error-save', [
+                    'date' => Carbon::parse($this->schedule->date)->format('d/m/Y'),
+                    'start_time' => $this->schedule->start_time,
+                    'end_time' => $this->schedule->end_time
+                ]));
+            }
         } while ($this->nextSchedule());
+
+        if ($status) {
+            $this->notifySuccess('text.save.success');
+        } else {
+            $this->notifyAlert('text.save.alert');
+        }
 
         $this->finally();
     }
@@ -178,7 +192,7 @@ class Create extends Component
         return $new;
     }
 
-    protected function saveSchedule(): void
+    protected function saveSchedule(): bool
     {
         $this->validate([
             'environment.id' => [
@@ -210,17 +224,12 @@ class Create extends Component
 
         $status = $this->schedule->save();
 
-        $this->notifySuccessOrError(
-            status: $status,
-            success: __('text.save.success'),
-            error: __('text.save.error')
-        );
-
         if ($isApproved) {
             SendApprovedScheduleEmails::dispatch($this->authUser(), $this->schedule);
         } else {
             SendPendingScheduleEmails::dispatch($this->schedule);
         }
+        return $status;
     }
 
     protected function nextSchedule(): bool
