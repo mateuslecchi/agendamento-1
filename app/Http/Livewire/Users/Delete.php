@@ -79,12 +79,13 @@ class Delete extends Component
             $this->notifyAlert('text.violation.integrity');
             return;
         }
-
-        if ((GroupRoles::getByValue($user->group->role->id) == GroupRoles::ADMIN()) && Group::find(AdminGroup::ID()->getValue())?->groupMembers()->count() < 2) {
+        if (!is_null($user?->group?->role->id) &&
+            (GroupRoles::getByValue($user?->group?->role->id) == GroupRoles::ADMIN()) &&
+            (Group::find(AdminGroup::ID()->getValue())?->groupMembers()->count() < 2)
+        ) {
             $this->notifyAlert('text.violation.integrity');
             return;
         }
-
         $this->user = $user;
         $this->modalToggle();
     }
