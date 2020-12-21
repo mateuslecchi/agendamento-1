@@ -17,9 +17,9 @@
             {{ Str::ucfirst(__('text.custom.approve.confirmation')) }}
         </x-slot>
         <x-slot name="footer">
-            <x-button type="button" wire:click="modalToggle">{{ __('label.btn.cancel')}} </x-button>
-            <x-button.danger
-                wire:click="$emit('confirm_schedule_confirmation', {{ $schedule?->id }})">{{ __('label.btn.yes-confirmation')}} </x-button.danger>
+            <x-button.danger type="button" wire:click="$emit('cancel_schedule_confirmation', {{ $schedule?->id }})">{{ __('label.btn.not-approve')}} </x-button.danger>
+            <x-button
+                wire:click="$emit('confirm_schedule_confirmation', {{ $schedule?->id }})">{{ __('label.btn.yes-approve')}} </x-button>
         </x-slot>
     </x-modal.confirmation>
 </div>

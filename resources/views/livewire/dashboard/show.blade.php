@@ -82,7 +82,7 @@
                                 @break
                                 @case(\App\Domain\Enum\Situation::PENDING()->getValue())
                                 <x-button type="button"
-                                          wire:click="$emit('show_schedule_confirm_modal', {{ $schedule?->id }})">{{ __('label.btn.approve') }}</x-button>
+                                          wire:click="$emit('show_schedule_confirm_modal', {{ $schedule?->id }})">{{ __('label.btn.analyze') }}</x-button>
                                 @break
                                 @default
                                 <x-button.danger type="button" disabled>{{ __('label.btn.cancel') }}</x-button.danger>

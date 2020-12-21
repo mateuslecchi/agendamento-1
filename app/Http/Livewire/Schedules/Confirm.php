@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpMissingFieldTypeInspection */
 
 namespace App\Http\Livewire\Schedules;
 
@@ -9,6 +9,9 @@ use App\Traits\AuthenticatedUser;
 use App\Traits\AuthorizesRoleOrPermission;
 use App\Traits\ModalCtrl;
 use App\Traits\NotifyBrowser;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Confirm extends Component
@@ -22,25 +25,26 @@ class Confirm extends Component
 
     protected $listeners = [
         'show_schedule_confirm_modal' => 'load',
-        'confirm_schedule_confirmation' => 'confirm'
+        'confirm_schedule_confirmation' => 'confirm',
+        'cancel_schedule_confirmation' => 'cancel'
     ];
 
-    public function render()
+    public function render(): Factory|View|Application
     {
         return view('livewire.schedules.confirm');
     }
 
-    public function mount()
+    public function mount(): void
     {
         $this->setEmptySchedule();
     }
 
-    protected function setEmptySchedule()
+    protected function setEmptySchedule(): void
     {
         $this->schedule = Schedule::make(['id' => 0]);
     }
 
-    public function load(Schedule $schedule)
+    public function load(Schedule $schedule): void
     {
         if (is_null($schedule)) {
             $this->notifyError('text.record-found-failed');
@@ -50,7 +54,13 @@ class Confirm extends Component
         $this->modalToggle();
     }
 
-    public function confirm(Schedule $schedule)
+    public function cancel(Schedule $schedule): void
+    {
+        $this->emit('show_schedule_cancel_modal', $schedule->id);
+        $this->modalToggle();
+    }
+
+    public function confirm(Schedule $schedule): void
     {
         if (!$this->modalIsOpen()) {
             return;
