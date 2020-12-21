@@ -72,6 +72,7 @@
     "text.violation.integrity": "violação de integridade detectada",
     "text.rule.without-schedule.message": ":count agendamentos encontrados nessa data ou horário",
     "label.action.forbidden": "ação não permitida",
+    "text.custom.validation-error-title": "Opa! Algo deu errado.",
     "text.custom.delete": "ao excluir :name todos os dados associados também serão deletados, tem certeza que quer fazer isso?",
     "text.custom.schedule.description": "<b>Local:</b> :environment - :block<br><b>Data:</b> :date<br><b>Horário:</b> :start_time às :end_time<br><b>Por:</b> :user<br>",
     "text.custom.cancel.confirmation": "tem certeza que deseja cancelar?",
