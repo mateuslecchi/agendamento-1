@@ -1,6 +1,6 @@
 <form wire:submit.prevent="save">
     <x-modal.dialog wire:model.defer="show_modal">
-        <x-slot name="title">{{ Str::title(__('label.custom.new', ['name' => __('label.group')])) }}</x-slot>
+        <x-slot name="title">{{ Str::title(__('label.custom.edit', ['name' => __('label.group')])) }}</x-slot>
         <!-- content -->
         <x-slot name="content">
             <x-auth-validation-errors class="mb-4" :errors="$errors"/>
