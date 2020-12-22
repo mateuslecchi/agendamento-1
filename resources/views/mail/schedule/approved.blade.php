@@ -5,7 +5,8 @@
             'date' => Carbon\Carbon::parse($schedule?->date)->format('d/m/Y'),
             'start_time' => Str::replaceLast(':00', '', $schedule?->start_time),
             'end_time' => Str::replaceLast(':00', '', $schedule?->end_time),
-            'user' => Str::ucfirst(__($schedule?->forGroup()->name)),
+            'for' => Str::ucfirst(__($schedule?->forGroup()->name)),
+            'by' => Str::ucfirst(__($schedule?->byGroup()->name))
         ])
     !!}
 # <center>{{ Str::ucfirst(__('text.custom.approved.by', ['name' => __($by)])) }}</center>

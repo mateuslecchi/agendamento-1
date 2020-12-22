@@ -5,7 +5,8 @@
             'date' => $date,
             'start_time' => $start_time,
             'end_time' => $end_time,
-            'user' => $user,
+            'for' => $for,
+            'by' => $by
         ])
     !!}
 # <center>{{ Str::ucfirst(__('text.custom.cancel.by', ['name' => $sendBy])) }}</center>

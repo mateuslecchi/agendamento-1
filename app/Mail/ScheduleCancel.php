@@ -35,7 +35,8 @@ class ScheduleCancel extends Mailable
             'date' => Carbon::parse($this->schedule['date'])->format('d/m/Y'),
             'start_time' => Str::replaceLast(':00', '', $this->schedule['start_time']),
             'end_time' => Str::replaceLast(':00', '', $this->schedule['end_time']),
-            'user' => Str::ucfirst(__($this->schedule['user'])),
+            'for' => Str::ucfirst(__($this->schedule['for'])),
+            'by' => Str::ucfirst(__($this->schedule['by'])),
             'sendBy' => Str::ucfirst(__($this->sendBy))
         ]);
     }

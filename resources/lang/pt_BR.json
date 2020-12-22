@@ -79,7 +79,7 @@
     "label.action.forbidden": "ação não permitida",
     "text.custom.validation-error-title": "Opa! Algo deu errado.",
     "text.custom.delete": "ao excluir :name todos os dados associados também serão deletados, tem certeza que quer fazer isso?",
-    "text.custom.schedule.description": "<b>Local:</b> :environment - :block<br><b>Data:</b> :date<br><b>Horário:</b> :start_time às :end_time<br><b>Por:</b> :user<br>",
+    "text.custom.schedule.description": "<b>Local:</b> :environment - :block<br><b>Data:</b> :date<br><b>Horário:</b> :start_time às :end_time<br><b>Para:</b> :for<br><b>Por:</b> :by<br>",
     "text.custom.cancel.confirmation": "tem certeza que deseja cancelar?",
     "text.custom.approve.confirmation": "tem certeza que deseja aprova?",
     "label.custom.violation-of-group-integrity": ":text",

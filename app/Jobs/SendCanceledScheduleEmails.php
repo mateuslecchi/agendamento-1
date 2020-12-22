@@ -38,7 +38,8 @@ class SendCanceledScheduleEmails implements ShouldQueue
                     'date' => $this->schedule->date,
                     'start_time' => $this->schedule->start_time,
                     'end_time' => $this->schedule->end_time,
-                    'user' => $this->schedule->forGroup()?->name,
+                    'for' => $this->schedule->forGroup()?->name,
+                    'by' => $this->schedule->byGroup()?->name,
                 ],
                 toName: $groupMember->user->name
             ))->delay(

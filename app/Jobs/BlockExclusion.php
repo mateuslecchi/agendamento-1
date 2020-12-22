@@ -54,7 +54,8 @@ class BlockExclusion implements ShouldQueue
                             'date' => $schedule['date'],
                             'start_time' => $schedule['start_time'],
                             'end_time' => $schedule['end_time'],
-                            'user' => $schedule['for'],
+                            'for' => $schedule['for'],
+                            'by' => $schedule['by']
                         ],
                         toName: $user['name']
                     ))->delay(
