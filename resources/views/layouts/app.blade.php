@@ -39,6 +39,7 @@
             </main>
         </div>
         @livewireScripts
+        @livewireCalendarScripts
     <script>
         window.livewire.onError(statusCode => {
             if (statusCode === 419 || statusCode === 500) {

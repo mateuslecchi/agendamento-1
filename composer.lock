@@ -4,8 +4,70 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f94cbdf6cb6ce23a6ede4af0d6cbab17",
+    "content-hash": "25494a5d47fea16c463eea1010576aaf",
     "packages": [
+        {
+            "name": "asantibanez/livewire-calendar",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/asantibanez/livewire-calendar.git",
+                "reference": "030ee713b6b82a6972665a85038490e76f0d9fc9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/asantibanez/livewire-calendar/zipball/030ee713b6b82a6972665a85038490e76f0d9fc9",
+                "reference": "030ee713b6b82a6972665a85038490e76f0d9fc9",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "~5.6.0|~5.7.0|~5.8.0|^6.0|^7.0|^8.0",
+                "livewire/livewire": "^1.0|^2.0",
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~3.6.0|~3.7.0|~3.8.0|^4.0|^5.0",
+                "phpunit/phpunit": "^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Asantibanez\\LivewireCalendar\\LivewireCalendarServiceProvider"
+                    ],
+                    "aliases": {
+                        "LivewireCalendar": "Asantibanez\\LivewireCalendar\\LivewireCalendarFacade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Asantibanez\\LivewireCalendar\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andrés Santibáñez",
+                    "email": "santibanez.andres@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel Livewire calendar component",
+            "homepage": "https://github.com/asantibanez/livewire-calendar",
+            "keywords": [
+                "asantibanez",
+                "livewire-calendar"
+            ],
+            "support": {
+                "issues": "https://github.com/asantibanez/livewire-calendar/issues",
+                "source": "https://github.com/asantibanez/livewire-calendar/tree/2.0.0"
+            },
+            "time": "2020-10-14T04:23:49+00:00"
+        },
         {
             "name": "asm89/stack-cors",
             "version": "v2.0.2",

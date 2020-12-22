@@ -9,14 +9,15 @@
     "license": "MIT",
     "require": {
         "php": "8.0",
+        "asantibanez/livewire-calendar": "^2.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.3.2",
-        "spatie/laravel-permission": "^3.18",
-        "myclabs/php-enum": "^1.7.7"
+        "myclabs/php-enum": "^1.7.7",
+        "spatie/laravel-permission": "^3.18"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

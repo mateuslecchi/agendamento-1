@@ -21,6 +21,10 @@ Route::get(__('route.dashboard.uri'), function () {
     return view('dashboard');
 })->middleware(['auth'])->name(__('route.dashboard.uri'));
 
+Route::get(__('route.dashboard.calendar.uri'), function () {
+    return view('dashboard-calendar');
+})->middleware(['auth'])->name(__('route.dashboard.calendar.uri'));
+
 Route::get(__('route.groups.uri'), function () {
     return view('groups');
 })->middleware(['auth'])->name(__('route.groups.uri'));
@@ -41,5 +45,9 @@ Route::get(__('route.environments.uri'), function () {
 Route::get(__('route.schedules.uri'), function () {
     return view('schedules');
 })->middleware(['auth'])->name(__('route.schedules.uri'));
+
+Route::get(__('route.schedules.calendar.uri'), function () {
+    return view('schedule-calendar');
+})->middleware(['auth'])->name(__('route.schedules.calendar.uri'));
 
 require __DIR__ . '/auth.php';
