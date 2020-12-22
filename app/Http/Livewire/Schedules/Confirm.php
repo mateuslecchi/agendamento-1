@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Schedules;
 
 use App\Domain\Enum\Situation;
 use App\Jobs\SendApprovedScheduleEmails;
+use App\Jobs\SendCanceledScheduleEmails;
 use App\Models\Schedule;
 use App\Traits\AuthenticatedUser;
 use App\Traits\AuthorizesRoleOrPermission;
@@ -56,8 +57,40 @@ class Confirm extends Component
 
     public function cancel(Schedule $schedule): void
     {
-        $this->emit('show_schedule_cancel_modal', $schedule->id);
-        $this->modalToggle();
+        if (!$this->modalIsOpen()) {
+            return;
+        }
+
+        if (is_null($schedule)) {
+            $this->notifyError('text.record-found-failed');
+            $this->finally();
+            return;
+        }
+
+        if ($this->schedule->id !== $schedule->id) {
+            $this->notifyAlert('text.violation.integrity');
+            $this->finally();
+            return;
+        }
+
+        $this->schedule->situations_id = Situation::CANCELED()->getValue();
+
+        $status = $this->schedule->save();
+
+        $this->notifySuccessOrError(
+            status: $status,
+            success: 'text.schedule.cancel.success',
+            error: 'text.schedule.cancel.error'
+        );
+
+        if ($status) {
+            SendCanceledScheduleEmails::dispatch($this->authUser(), $this->schedule);
+        }
+
+        $this->finally();
+
+       /* $this->emit('show_schedule_cancel_modal', $schedule->id);
+        $this->modalToggle();*/
     }
 
     public function confirm(Schedule $schedule): void
