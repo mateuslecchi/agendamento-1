@@ -25,6 +25,7 @@
                     <select id="group" class="block mt-1 w-full"
                             wire:model.defer="group.id">
                         <option value="0" selected>{{ __('label.select') }}</option>
+                        <option value="-1" selected>{{ __('label.personal-group') }}</option>
                         @forelse($groups as $group)
                             <option value="{{ __($group->id) }}">{{ __($group->name) }}</option>
                         @empty

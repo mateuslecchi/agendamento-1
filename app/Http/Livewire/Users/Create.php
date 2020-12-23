@@ -74,6 +74,16 @@ class Create extends Component
             return false;
         }
 
+        if ($this->group->id === -1) {
+            $group = new Group();
+            $group->name = $this->user->name;
+            $group->group_roles_id = GroupRoles::USER()->getValue();
+
+            if ($group->save()) {
+                $this->group = $group;
+            }
+        }
+
         if (!$this->insertInGroup()) {
             try {
                 $this->user->delete();
@@ -105,7 +115,7 @@ class Create extends Component
             'user.name' => ['required', 'string', 'min:2', 'max:255'],
             'user.email' => ['required', 'string', 'email:rfc,dns', 'min:5', 'max:255', Rule::unique('users', 'email')],
             'user.password' => ['required', 'string', 'min:8', 'max:2048'],
-            'group.id' => ['required', 'numeric', Rule::in(Group::all()->pluck('id')->all())]
+            'group.id' => ['required', 'numeric', Rule::in([-1, ...Group::all()->pluck('id')->all()])]
         ];
     }
 

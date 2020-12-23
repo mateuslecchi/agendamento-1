@@ -44,6 +44,7 @@ class Group extends Model
     {
         return parent::newQuery()
             ->where('deleted', '=', 0)
+            ->orderBy('id')
             ->orderBy('name');
     }
 
