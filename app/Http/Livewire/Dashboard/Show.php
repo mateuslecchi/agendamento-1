@@ -44,9 +44,11 @@ class Show extends \App\Http\Livewire\Schedules\Show
                 return $schedule->situations_id === $this->situation;
             });
         } else {
-            $schedule = $schedule->filter(function (Schedule $schedule) {
-                return $schedule->situations_id !== Situation::CANCELED()->getValue();
-            });
+            if ($this->date === '0000-00-00' || $this->date === '') {
+                $schedule = $schedule->filter(function (Schedule $schedule) {
+                    return $schedule->situations_id !== Situation::CANCELED()->getValue();
+                });
+            }
         }
 
         if ($this->date !== '0000-00-00' && $this->date !== '') {
