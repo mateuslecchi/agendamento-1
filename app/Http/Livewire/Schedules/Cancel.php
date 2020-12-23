@@ -64,8 +64,8 @@ class Cancel extends Component
             return;
         }
 
-        if ($this->schedule->id !== $schedule->id) {
-            $this->notifyAlert('text.violation.integrity');
+        if ($schedule->by !== $this->authGroup()->id || $this->schedule->id !== $schedule->id) {
+            $this->notifyError('text.violation.integrity');
             $this->finally();
             return;
         }

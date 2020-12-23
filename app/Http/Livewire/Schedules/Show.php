@@ -55,7 +55,9 @@ class Show extends Component
         return view('livewire.schedules.show', [
             'blocks' => $this->blocks(),
             'environments' => $this->environments(),
-            'schedules' => $this->schedules(new Common())
+            'schedules' => $this->schedules(new Common()),
+            'authGroup' => $this->authGroup()->id,
+            'isAdmin' => $this->authIsAdmin()
         ]);
     }
 

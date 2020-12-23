@@ -63,6 +63,7 @@
                         </x-table.cell>
 
                         <x-table.cell class="text-center">
+                            @if($authGroup === $schedule->by || $isAdmin)
                             @switch($schedule->situation?->id)
                                 @case(\App\Domain\Enum\Situation::PENDING()->getValue())
                                 @case(\App\Domain\Enum\Situation::CONFIRMED()->getValue())
@@ -73,6 +74,10 @@
                                 <x-button.danger type="button" wire:click="$emit('show_schedule_cancel_modal', 0)"
                                                  disabled>{{ __('label.btn.cancel') }}</x-button.danger>
                             @endswitch
+                            @else
+                                <x-button.danger type="button" wire:click="$emit('show_schedule_cancel_modal', 0)"
+                                                 disabled>{{ __('label.btn.cancel') }}</x-button.danger>
+                            @endif
                         </x-table.cell>
                     </x-table.row>
                 @empty
