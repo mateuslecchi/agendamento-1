@@ -210,17 +210,23 @@ class Create extends Component
 
         $this->schedule->environments_id = $this->environment->id;
 
-        if ($this->authIsAdmin()) {
-            $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
-            $isApproved = true;
-
-        } else if ($this->authGroup()->id === $this->environment->group->id) {
+        if (env('AUTOMATIC_APPROVAL', false)){
             $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
             $isApproved = true;
         } else {
-            $this->schedule->situations_id = Situation::PENDING()->getValue();
-            $isApproved = false;
+            if ($this->authIsAdmin()) {
+                $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
+                $isApproved = true;
+
+            } else if ($this->authGroup()->id === $this->environment->group->id) {
+                $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
+                $isApproved = true;
+            } else {
+                $this->schedule->situations_id = Situation::PENDING()->getValue();
+                $isApproved = false;
+            }
         }
+
 
         $status = $this->schedule->save();
 
