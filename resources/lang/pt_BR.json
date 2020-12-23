@@ -56,6 +56,7 @@
     "label.month": "meses",
     "label.send": "enviar",
     "label.environment.all": "todos os ambiente",
+    "label.confirm-password": "Confirme a Senha",
     "label.btn.save": "salvar",
     "label.btn.cancel": "cancelar",
     "label.btn.edit": "editar",
@@ -104,5 +105,14 @@
     "text.custom.approved.by": "aprovado por :name",
     "mail.schedule.subject.pending": "agendamento pendente",
     "text.custom.pending.by": "aguardando aprovação por :group",
-    "text.custom.deletion-of-registration-started": "exclusão de registro iniciada"
+    "text.custom.deletion-of-registration-started": "exclusão de registro iniciada",
+    "Whoops!": "Opa!",
+    "Hello!": "Olá!",
+    "Regards": "Saudações",
+    "Reset Password Notification": "Notificação de redefinição de senha",
+    "You are receiving this email because we received a password reset request for your account.": "Você está recebendo este e-mail porque recebemos uma solicitação de redefinição de senha de sua conta.",
+    "Reset Password": "Redefinir senha",
+    "This password reset link will expire in :count minutes.": "Este link de redefinição de senha irá expirar em :count minutos.",
+    "If you did not request a password reset, no further action is required.": "Se você não solicitou uma redefinição de senha, nenhuma ação adicional será necessária.",
+    "If you’re having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "Se você estiver com problemas para clicar no botão \":actionText\", copie e cole o URL abaixo em seu navegador:"
 }
