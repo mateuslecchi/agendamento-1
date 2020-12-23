@@ -64,10 +64,12 @@ class Cancel extends Component
             return;
         }
 
-        if ($schedule->environment->group->id !== $this->authGroup()->id || $schedule->by !== $this->authGroup()->id || $this->schedule->id !== $schedule->id) {
-            $this->notifyError('text.violation.integrity');
-            $this->finally();
-            return;
+        if ($schedule->environment->groups_id !== $this->authGroup()->id) {
+            if ($schedule->by !== $this->authGroup()->id || $this->schedule->id !== $schedule->id) {
+                $this->notifyError('text.violation.integrity');
+                $this->finally();
+                return;
+            }
         }
 
         $this->schedule->situations_id = Situation::CANCELED()->getValue();
