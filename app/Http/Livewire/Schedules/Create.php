@@ -225,6 +225,7 @@ class Create extends Component
         $status = $this->schedule->save();
 
         if ($isApproved) {
+
             SendApprovedScheduleEmails::dispatch($this->authUser(), $this->schedule);
         } else {
             SendPendingScheduleEmails::dispatch($this->schedule);

@@ -64,6 +64,7 @@
 
                         <x-table.cell class="text-center">
                             @switch($schedule->situation?->id)
+                                @case(\App\Domain\Enum\Situation::PENDING()->getValue())
                                 @case(\App\Domain\Enum\Situation::CONFIRMED()->getValue())
                                 <x-button.danger type="button"
                                                  wire:click="$emit('show_schedule_cancel_modal', {{ $schedule?->id }})">{{ __('label.btn.cancel') }}</x-button.danger>
