@@ -113,8 +113,14 @@ class Edit extends Create
 
     protected function saveGroup(): bool
     {
-        if ($this->group->id !== 0 && $this->group->id === ($this->user->group?->id ?? 0)) {
+        if ($this->group->id > 0 && $this->group->id === ($this->user->group?->id ?? 0)) {
             return true;
+        }
+
+        $this->group = Group::find($this->group->id);
+
+        if (is_null($this->user->member)) {
+            return $this->associateUserWithGroup();
         }
         $this->user->member->groups_id = $this->group->id;
         return $this->user->member->save();

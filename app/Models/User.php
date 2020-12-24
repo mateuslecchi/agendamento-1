@@ -25,7 +25,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $updated_at
  * @property GroupMember[] $groupMembers
  * @property mixed group
- * @property mixed member
+ * @property null|GroupMember member
  * @method static make(array $array)
  * @method static find(int|string|null $id)
  */
