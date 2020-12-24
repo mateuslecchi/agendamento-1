@@ -2,12 +2,13 @@
 
 namespace App\Http\Livewire\Users;
 
-use App\Domain\Enum\GroupRoles;
 use App\Domain\Policy;
-use App\Models\User;
+use App\Models\User as UserModel;
 use App\Traits\AuthenticatedUser;
 use App\Traits\AuthorizesRoleOrPermission;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Show extends Component
@@ -15,23 +16,15 @@ class Show extends Component
     use AuthenticatedUser;
     use AuthorizesRoleOrPermission;
 
-    protected $listeners = [
-        'update_user_display_content' => '$refresh'
-    ];
-
     public function mount(): void
     {
        Policy::users_show_mount();
     }
 
-    /** @noinspection NullPointerExceptionInspection */
-    public function render()
+    public function render(): Factory|View|Application
     {
         return view('livewire.users.show', [
-            'users' => match (GroupRoles::getByValue($this->authGroup()->id)?->getValue()) {
-                GroupRoles::ADMIN()->getValue() => User::all(),
-                default => new Collection()
-    }
+            'users' => UserModel::all()
         ]);
-}
+    }
 }

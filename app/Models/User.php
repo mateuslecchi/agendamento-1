@@ -5,6 +5,7 @@
 
 namespace App\Models;
 
+use App\Traits\Fmt;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -107,5 +108,20 @@ class User extends Authenticatable
     {
         $this->password = Hash::make($this->password);
         return $this;
+    }
+
+    public function getFormattedNameAttribute(): string
+    {
+        return Fmt::text($this->name);
+    }
+
+    public function getFormattedGroupAttribute(): string
+    {
+        return Fmt::text($this->group?->name);
+    }
+
+    public function getFormattedRoleAttribute(): string
+    {
+        return Fmt::text($this->group?->role?->name);
     }
 }
