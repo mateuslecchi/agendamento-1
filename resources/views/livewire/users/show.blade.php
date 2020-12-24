@@ -26,7 +26,7 @@
                         </x-table.cell>
                         <x-table.cell>
                             <x-button type="button"
-                                      wire:click="$emit('show_user_exclusion_modal', {{ $user->id }})">{{ App\Traits\Fmt::text('label.btn.delete') }}</x-button>
+                                      wire:click="$emit('{{ \App\Http\Livewire\Users\Delete::ID }}', {{ $user->id }})">{{ App\Traits\Fmt::text('label.btn.delete') }}</x-button>
                         </x-table.cell>
                     </x-table.row>
                 @empty

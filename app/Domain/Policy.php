@@ -18,6 +18,14 @@ class Policy
         ]);
     }
 
+    public static function users_delete_mount(): void
+    {
+        self::authRoleOrPermission([
+            GroupRoles::ADMIN()->getName(),
+            Permission::USER_DELETE()->getValue()
+        ]);
+    }
+
     public static function users_edit_mount(): void
     {
         self::authRoleOrPermission([

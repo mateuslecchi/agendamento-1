@@ -18,7 +18,7 @@ class Show extends Component
 
     public function mount(): void
     {
-       Policy::users_show_mount();
+        Policy::users_show_mount();
     }
 
     public function render(): Factory|View|Application

@@ -56,24 +56,24 @@ class Edit extends Create
             $this->administratorSelfEditing();
     }
 
+    #[Pure]
+    protected function userIsEditing(): bool
+    {
+        return isset($this->user) ? !is_null($this->user->id) : false;
+    }
+
     protected function editingUserIsAnAdministrator(): bool
     {
         return GroupRoles::getByValue($this->user->group?->group_roles_id ?? 0, GroupRoles::USER())
                 ->getValue() === GroupRoles::ADMIN()->getValue();
     }
 
-    #[Pure]
-    protected function userIsEditing(): bool
-    {
-        return !is_null($this->user->id);
-    }
-
     protected function isUniqueAdministrator(): bool
     {
         return Group::byRole(GroupRoles::ADMIN())
-            ->map(function (Group $group) {
-                return $group->groupMembers()->count();
-            })->sum() > 1;
+                ->map(function (Group $group) {
+                    return $group->groupMembers()->count();
+                })->sum() === 1;
     }
 
     protected function administratorSelfEditing(): bool
@@ -128,7 +128,7 @@ class Edit extends Create
 
     protected function rules(): array
     {
-        if(!isset($this->user)) {
+        if (!isset($this->user)) {
             return parent::rules();
         }
         $rules = parent::rules();

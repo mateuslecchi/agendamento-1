@@ -124,6 +124,12 @@ class Create extends Component
         $this->initializeProperties();
     }
 
+    public function hydrate(): void
+    {
+        $this->resetErrorBag();
+        $this->resetValidation();
+    }
+
     protected function rules(): array
     {
         return [
@@ -147,11 +153,5 @@ class Create extends Component
                 'attribute' => Fmt::lower('label.group')
             ], false)
         ];
-    }
-
-    public function hydrate(): void
-    {
-        $this->resetErrorBag();
-        $this->resetValidation();
     }
 }
