@@ -10,6 +10,14 @@ class Policy
 {
     use AuthorizesRoleOrPermission;
 
+    public static function users_create_mount(): void
+    {
+        self::authRoleOrPermission([
+            GroupRoles::ADMIN()->getName(),
+            Permission::USER_CREATE()->getValue()
+        ]);
+    }
+
     public static function users_edit_mount(): void
     {
         self::authRoleOrPermission([

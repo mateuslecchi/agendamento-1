@@ -3,13 +3,18 @@
 namespace App\Http\Livewire\Users;
 
 use App\Domain\Enum\GroupRoles;
+use App\Domain\Policy;
 use App\Models\Group;
-use App\Models\GroupMember;
 use App\Models\User;
 use App\Traits\AuthorizesRoleOrPermission;
+use App\Traits\Fmt;
+use App\Traits\Make;
 use App\Traits\ModalCtrl;
 use App\Traits\NotifyBrowser;
-use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
@@ -26,87 +31,94 @@ class Create extends Component
         'show_modal_user' => 'modalToggle'
     ];
 
-    public function render()
+    public function render(): Factory|View|Application
     {
-        return view('livewire.users.create', [
-            'groups' => Group::all()
-        ]);
+        return view('livewire.users.create', ['groups' => $this->validGroupsForSelection()]);
+    }
+
+    public function validGroupsForSelection(): Collection
+    {
+        return new Collection([Make::personalGroup(),...Group::all()]);
     }
 
     public function mount(): void
     {
-        $this->authorizeRoleOrPermission([
-            GroupRoles::ADMIN()->getName()
-        ]);
-
-        $this->setEmptyUser();
-        $this->setEmptyGroup();
+        Policy::users_create_mount();
+        $this->initializeProperties();
     }
 
-    protected function setEmptyUser(): void
+    protected function initializeProperties(): void
     {
-        $this->user = User::make([]);
+        $this->user = Make::user();
+        $this->group = Make::group();
     }
 
     public function save(): void
     {
-        if (!$this->modalIsOpen()) {
-            return;
-        }
-
         $this->validate();
-
-        $status = $this->saveEntity();
-
-        $this->notifySuccessOrError(
-            status: $status,
-            success: __('text.save.success'),
-            error: __('text.save.error')
+        $this->sendNotification(
+            savedUser: $this->createUser(),
+            hasGroup: $this->configureGroup(),
+            hasRole: $this->configurePermissions()
         );
-
         $this->finally();
     }
 
-    protected function saveEntity(): bool
+    protected function sendNotification(bool $savedUser, bool $hasGroup, bool $hasRole): void
     {
-
-        if (!$this->user->hashPassword()->save()) {
-            return false;
-        }
-
-        if ($this->group->id === -1) {
-            $group = new Group();
-            $group->name = $this->user->name;
-            $group->group_roles_id = GroupRoles::USER()->getValue();
-
-            if ($group->save()) {
-                $this->group = $group;
-            }
-        }
-
-        if (!$this->insertInGroup()) {
-            try {
-                $this->user->delete();
-            } catch (Exception) {
-                // ...
-            } finally {
-                return false;
-            }
-        }
-
-        $this->user->syncRoles(GroupRoles::getByValue(
-            Group::find($this->group->id)?->group_roles_id
-        )->getName());
-
-        return true;
+        $this->notifySuccessOrError(
+            status: $savedUser && $hasGroup && $hasRole,
+            success: Fmt::title('text.save.success'),
+            error: Fmt::title('text.save.error')
+        );
     }
 
-    protected function insertInGroup(): bool
+    protected function createUser(): bool
     {
-        return (bool)GroupMember::create([
+        return $this->user->hashPassword()->save();
+    }
+
+    protected function configureGroup(): bool
+    {
+        if ($this->group->id === Make::personalGroup()->id) {
+            $this->group = $this->createPersonalGroup();
+        }
+        return $this->associateUserWithGroup();
+    }
+
+    protected function createPersonalGroup(): Group
+    {
+        $group = Make::group([
+            'name' => $this->user->name,
+            'group_roles_id' => GroupRoles::USER()->getValue()
+        ]);
+        $group->save();
+        return $group;
+    }
+
+    protected function associateUserWithGroup(): bool
+    {
+        return Make::groupMember([
             'groups_id' => $this->group->id,
             'users_id' => $this->user->id,
-        ]);
+        ])->save();
+    }
+
+    protected function configurePermissions(): bool
+    {
+        $this->user->syncRoles($this->groupRole());
+        return $this->user->hasRole($this->groupRole());
+    }
+
+    protected function groupRole(): string
+    {
+        return GroupRoles::getByValue($this->group->group_roles_id)?->getName();
+    }
+
+    protected function finally(): void
+    {
+        $this->modalToggle();
+        $this->initializeProperties();
     }
 
     protected function rules(): array
@@ -115,34 +127,22 @@ class Create extends Component
             'user.name' => ['required', 'string', 'min:2', 'max:255'],
             'user.email' => ['required', 'string', 'email:rfc,dns', 'min:5', 'max:255', Rule::unique('users', 'email')],
             'user.password' => ['required', 'string', 'min:8', 'max:2048'],
-            'group.id' => ['required', 'numeric', Rule::in([-1, ...Group::all()->pluck('id')->all()])]
+            'group.id' => ['required', 'numeric', Rule::in($this->validGroupsForSelection()->pluck('id'))]
         ];
     }
 
     protected function messages(): array
     {
         return [
-            'group.id.required' => __('validation.required', ['attribute' => __('label.group')]),
-            'group.id.in' => __('validation.in', ['attribute' => __('label.group')]),
-            'group.id.numeric' => __('validation.numeric', ['attribute' => __('label.group')]),
+            'group.id.required' => Fmt::text('validation.required', [
+                'attribute' => Fmt::lower('label.group')
+            ]),
+            'group.id.in' => Fmt::text('validation.in', [
+                'attribute' => Fmt::lower('label.group')
+            ]),
+            'group.id.numeric' => Fmt::text('validation.numeric', [
+                'attribute' => Fmt::lower('label.group')
+            ])
         ];
-    }
-
-    protected function finally(): void
-    {
-        $this->updateView();
-        $this->modalToggle();
-        $this->setEmptyUser();
-        $this->setEmptyGroup();
-    }
-
-    protected function updateView(): void
-    {
-        $this->emit('update_user_display_content');
-    }
-
-    public function setEmptyGroup(): void
-    {
-        $this->group = Group::make([]);
     }
 }

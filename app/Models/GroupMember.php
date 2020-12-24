@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Schedule[] $schedules
  * @method static create(array $array)
  * @method static where(string $string, string $string1, int $id)
+ * @method static make(array $attributes)
  */
 class GroupMember extends Model
 {

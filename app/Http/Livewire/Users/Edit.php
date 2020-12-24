@@ -28,7 +28,7 @@ class Edit extends Create
     public function mount(): void
     {
         Policy::users_edit_mount();
-        $this->setEmptyUser();
+        $this->initializeProperties();
     }
 
     public function render(): View|Factory|Application
@@ -70,7 +70,7 @@ class Edit extends Create
 
         if (is_null($user->group)) {
             $this->notifyAlert('text.violation.integrity');
-            $this->setEmptyGroup();
+            $this->initializeProperties();
         } else {
             $this->group = $user->group;
         }

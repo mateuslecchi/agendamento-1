@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Traits\Fmt;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -76,5 +77,15 @@ class Group extends Model
     public function getRoleAttribute(): GroupRole
     {
         return $this->groupRole;
+    }
+
+    public function getFormattedRoleAttribute(): string
+    {
+        return Fmt::text($this->role?->name);
+    }
+
+    public function getFormattedNameAttribute(): string
+    {
+        return Fmt::text($this->name);
     }
 }
