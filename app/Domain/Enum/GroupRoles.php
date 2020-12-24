@@ -32,14 +32,17 @@ class GroupRoles extends Enum
         return new self(self::USER);
     }
 
-    public static function getByValue(int $value): null | self
+    public static function getByValue(int $value, self|null $default = null): self
     {
         foreach (self::values() as $role) {
             if ($role->getValue() === $value) {
                 return $role;
             }
         }
-        return null;
+        if (is_null($default)) {
+            return self::USER();
+        }
+        return $default;
     }
 
     #[Pure] public function getName(): string

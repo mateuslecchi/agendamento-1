@@ -1,5 +1,5 @@
 <div>
-    <form wire:submit.prevent="save">
+    <form wire:submit.prevent="createNewUser">
         <x-modal.dialog wire:model.defer="show_modal">
             <x-slot name="title">{{ App\Traits\Fmt::text('label.custom.new', ['name' => 'label.user'])  }}</x-slot>
             <!-- content -->

@@ -1,7 +1,7 @@
 <div>
     <div class="py-4 px-4">
         <div class="flex justify-end">
-            <x-button type="button" wire:click="$emit('show_modal_user')">{{ App\Traits\Fmt::text('label.btn.new') }}</x-button>
+            <x-button type="button" wire:click="$emit('{{ App\Http\Livewire\Users\Create::ID }}')">{{ App\Traits\Fmt::text('label.btn.new') }}</x-button>
         </div>
     </div>
     <div wire:poll>
@@ -22,7 +22,7 @@
                         <x-table.cell>{{ $user->formattedRole }}</x-table.cell>
                         <x-table.cell>
                             <x-button type="button"
-                                      wire:click="$emit('show_user_editing_modal', {{ $user->id }})">{{ App\Traits\Fmt::text('label.btn.edit') }}</x-button>
+                                      wire:click="$emit('{{ \App\Http\Livewire\Users\Edit::ID }}', {{ $user->id }})">{{ App\Traits\Fmt::text('label.btn.edit') }}</x-button>
                         </x-table.cell>
                         <x-table.cell>
                             <x-button type="button"

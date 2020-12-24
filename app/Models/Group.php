@@ -6,11 +6,13 @@
 
 namespace App\Models;
 
+use App\Domain\Enum\GroupRoles;
 use App\Traits\Fmt;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 /**
  * @property integer $id
@@ -29,16 +31,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Group extends Model
 {
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
+    public const NAME = 'name';
+    public const GROUP_ROLE_ID = 'group_roles_id';
+
     protected $keyType = 'integer';
 
-    /**
-     * @var array
-     */
     protected $fillable = ['group_roles_id', 'name', 'created_at', 'updated_at'];
 
     public function newQuery(): Builder
@@ -49,25 +46,21 @@ class Group extends Model
             ->orderBy('name');
     }
 
-    /**
-     * @return BelongsTo
-     */
+    public static function byRole(GroupRoles $roles): Collection
+    {
+        return self::query()->where(self::GROUP_ROLE_ID, '=', $roles->getValue())->get();
+    }
+
     public function groupRole(): BelongsTo
     {
         return $this->belongsTo(GroupRole::class, 'group_roles_id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function environments(): HasMany
     {
         return $this->hasMany(Environment::class, 'groups_id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function groupMembers(): HasMany
     {
         return $this->hasMany(GroupMember::class, 'groups_id');

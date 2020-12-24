@@ -26,7 +26,7 @@ trait Make
     public static function personalGroup(): Group
     {
         $group = Make::group([
-            'name' => 'label.personal-group'
+            Group::NAME => 'label.personal-group'
         ]);
         $group->id = -1;
         return $group;

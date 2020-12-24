@@ -35,37 +35,23 @@ class User extends Authenticatable
     use Notifiable;
     use HasRoles;
 
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
+    public const NAME = 'name';
+    public const EMAIL = 'email';
+    public const PASSWORD = 'password';
+
     protected $keyType = 'integer';
 
-    /**
-     * @var array
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
@@ -76,34 +62,24 @@ class User extends Authenticatable
             ->where('deleted', '=', 0)
             ->orderBy('name');
     }
-    /**
-     * @return HasMany
-     */
+
     public function groupMembers(): HasMany
     {
         return $this->hasMany(GroupMember::class, 'users_id');
     }
 
-    /** @noinspection PhpUndefinedMethodInspection
-     * @noinspection PhpUnused
-     */
+    /** @noinspection PhpUndefinedMethodInspection */
     public function getGroupAttribute(): null | Group
     {
         return $this->groupMembers?->first()?->group;
     }
 
-    /** @noinspection PhpUndefinedMethodInspection
-     * @noinspection PhpUnused
-     */
+    /** @noinspection PhpUndefinedMethodInspection */
     public function getMemberAttribute(): null | GroupMember
     {
         return $this->groupMembers?->first();
     }
 
-    /**
-     * Criar uma hash direta a partir de qualquer valor salvo em senha.
-     * @return $this
-     */
     public function hashPassword(): self
     {
         $this->password = Hash::make($this->password);

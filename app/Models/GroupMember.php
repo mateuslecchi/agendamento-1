@@ -22,37 +22,25 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class GroupMember extends Model
 {
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
+
+    public const GROUP_ID = 'groups_id';
+    public const USER_ID = 'users_id';
+
+
     protected $keyType = 'integer';
 
-    /**
-     * @var array
-     */
     protected $fillable = ['groups_id', 'users_id'];
 
-    /**
-     * @return BelongsTo
-     */
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class, 'groups_id');
     }
 
-    /**
-     * @return BelongsTo
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'users_id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class, 'group_members_id');

@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Users;
 use App\Domain\Enum\GroupRoles;
 use App\Domain\Policy;
 use App\Models\Group;
+use App\Models\GroupMember;
 use App\Models\User;
 use App\Traits\AuthorizesRoleOrPermission;
 use App\Traits\Fmt;
@@ -20,6 +21,8 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    public const ID = '9be59e58-bb80-46c5-954c-4a1d752b84fd';
+
     use ModalCtrl;
     use NotifyBrowser;
     use AuthorizesRoleOrPermission;
@@ -28,7 +31,7 @@ class Create extends Component
     public Group $group;
 
     protected $listeners = [
-        'show_modal_user' => 'modalToggle'
+        self::ID => 'modalToggle'
     ];
 
     public function render(): Factory|View|Application
@@ -36,9 +39,9 @@ class Create extends Component
         return view('livewire.users.create', ['groups' => $this->validGroupsForSelection()]);
     }
 
-    public function validGroupsForSelection(): Collection
+    protected function validGroupsForSelection(): Collection
     {
-        return new Collection([Make::personalGroup(),...Group::all()]);
+        return new Collection([Make::personalGroup(), ...Group::all()]);
     }
 
     public function mount(): void
@@ -53,10 +56,10 @@ class Create extends Component
         $this->group = Make::group();
     }
 
-    public function save(): void
+    public function createNewUser(): void
     {
         $this->validate();
-        $this->sendNotification(
+        $this->sendBrowserNotification(
             savedUser: $this->createUser(),
             hasGroup: $this->configureGroup(),
             hasRole: $this->configurePermissions()
@@ -64,7 +67,7 @@ class Create extends Component
         $this->finally();
     }
 
-    protected function sendNotification(bool $savedUser, bool $hasGroup, bool $hasRole): void
+    protected function sendBrowserNotification(bool $savedUser, bool $hasGroup, bool $hasRole): void
     {
         $this->notifySuccessOrError(
             status: $savedUser && $hasGroup && $hasRole,
@@ -89,8 +92,8 @@ class Create extends Component
     protected function createPersonalGroup(): Group
     {
         $group = Make::group([
-            'name' => $this->user->name,
-            'group_roles_id' => GroupRoles::USER()->getValue()
+            Group::NAME => $this->user->name,
+            Group::GROUP_ROLE_ID => GroupRoles::USER()->getValue()
         ]);
         $group->save();
         return $group;
@@ -99,8 +102,8 @@ class Create extends Component
     protected function associateUserWithGroup(): bool
     {
         return Make::groupMember([
-            'groups_id' => $this->group->id,
-            'users_id' => $this->user->id,
+            GroupMember::GROUP_ID => $this->group->id,
+            GroupMember::USER_ID => $this->user->id,
         ])->save();
     }
 
@@ -112,7 +115,7 @@ class Create extends Component
 
     protected function groupRole(): string
     {
-        return GroupRoles::getByValue($this->group->group_roles_id)?->getName();
+        return GroupRoles::getByValue($this->group->group_roles_id, GroupRoles::USER())->getName();
     }
 
     protected function finally(): void
@@ -136,13 +139,19 @@ class Create extends Component
         return [
             'group.id.required' => Fmt::text('validation.required', [
                 'attribute' => Fmt::lower('label.group')
-            ]),
+            ], false),
             'group.id.in' => Fmt::text('validation.in', [
                 'attribute' => Fmt::lower('label.group')
-            ]),
+            ], false),
             'group.id.numeric' => Fmt::text('validation.numeric', [
                 'attribute' => Fmt::lower('label.group')
-            ])
+            ], false)
         ];
+    }
+
+    public function hydrate(): void
+    {
+        $this->resetErrorBag();
+        $this->resetValidation();
     }
 }
