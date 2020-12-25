@@ -41,7 +41,12 @@ class Create extends Component
 
     protected function validGroupsForSelection(): Collection
     {
-        return new Collection([Make::personalGroup(), ...Group::all()]);
+        return new Collection([
+            Make::fakePersonalGroup(),
+            ...Group::query()
+                ->where(Group::PERSONAL_GROUP, '=', false)
+                ->get()
+        ]);
     }
 
     public function mount(): void
@@ -83,7 +88,7 @@ class Create extends Component
 
     protected function configureGroup(): bool
     {
-        if ($this->group->id === Make::personalGroup()->id) {
+        if ($this->group->id === Make::fakePersonalGroup()->id) {
             $this->group = $this->createPersonalGroup();
         }
         return $this->associateUserWithGroup();
@@ -93,7 +98,8 @@ class Create extends Component
     {
         $group = Make::group([
             Group::NAME => $this->user->name,
-            Group::GROUP_ROLE_ID => GroupRoles::USER()->getValue()
+            Group::GROUP_ROLE_ID => GroupRoles::USER()->getValue(),
+            Group::PERSONAL_GROUP => true
         ]);
         $group->save();
         return $group;

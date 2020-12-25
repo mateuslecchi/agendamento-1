@@ -43,7 +43,22 @@ class Edit extends Create
 
     protected function validGroupsForSelection(): Collection
     {
-        return Group::all();
+        if(!isset($this->user)) {
+            return new Collection();
+        }
+
+        $groups = Group::query()
+            ->where(Group::PERSONAL_GROUP, '=',false)
+            ->get();
+
+        if (!$this->user?->group) {
+            return $groups;
+        }
+
+        return new Collection([
+            $this->user->group,
+            ...$groups
+        ]);
     }
 
     protected function disableGroupEditing(): bool

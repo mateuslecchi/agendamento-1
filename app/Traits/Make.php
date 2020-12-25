@@ -23,7 +23,7 @@ trait Make
         return GroupMember::make($attributes);
     }
 
-    public static function personalGroup(): Group
+    public static function fakePersonalGroup(): Group
     {
         $group = Make::group([
             Group::NAME => 'label.personal-group'

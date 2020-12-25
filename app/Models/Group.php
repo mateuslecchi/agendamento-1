@@ -18,6 +18,7 @@ use Illuminate\Support\Collection;
  * @property integer $id
  * @property integer $group_roles_id
  * @property string $name
+ * @property bool $personal_group
  * @property string $created_at
  * @property string $updated_at
  * @property GroupRole $groupRole
@@ -33,10 +34,18 @@ class Group extends Model
 {
     public const NAME = 'name';
     public const GROUP_ROLE_ID = 'group_roles_id';
+    public const PERSONAL_GROUP = 'personal_group';
 
     protected $keyType = 'integer';
 
-    protected $fillable = ['group_roles_id', 'name', 'created_at', 'updated_at'];
+    protected $fillable = [
+        'group_roles_id',
+        'name',
+        'personal_group',
+        'deleted',
+        'created_at',
+        'updated_at'
+    ];
 
     public function newQuery(): Builder
     {

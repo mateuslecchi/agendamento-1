@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property integer $groups_id
  * @property int $blocks_id
  * @property string $name
+ * @property bool $automatic_approval
  * @property string $created_at
  * @property string $updated_at
  * @property Block $block
@@ -27,16 +28,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Environment extends Model
 {
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
+    public const NAME = 'name';
+    public const GROUP_ID = 'groups_id';
+    public const BLOCK_ID = 'blocks_id';
+    public const AUTOMATIC_APPROVAL = 'automatic_approval';
+
     protected $keyType = 'integer';
 
-    /**
-     * @var array
-     */
     protected $fillable = ['groups_id', 'blocks_id', 'name', 'deleted', 'created_at', 'updated_at'];
 
     protected $with = [
@@ -62,33 +60,21 @@ class Environment extends Model
         return self::where('groups_id', '=', $group->id)->get() ?? new Collection();
     }
 
-    /**
-     * @return BelongsTo
-     */
     public function block(): BelongsTo
     {
         return $this->belongsTo(Block::class, 'blocks_id');
     }
 
-    /**
-     * @return BelongsTo
-     */
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class, 'groups_id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class, 'environments_id');
     }
 
-    /** @noinspection PhpIncompatibleReturnTypeInspection
-     * @noinspection PhpUnused
-     */
     public function getBlockAttribute(): null | Block
     {
         return $this->block()?->first();

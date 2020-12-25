@@ -103,6 +103,9 @@ class Delete extends Component
     protected function deleteUser(): bool
     {
         try {
+            if ($this->user->group?->personal_group) {
+                $this->user->group?->delete();
+            }
             return $this->user->delete();
         } catch (Exception) {
             return false;
