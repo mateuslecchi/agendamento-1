@@ -17,6 +17,7 @@ class CreateGroupsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->unsignedBigInteger('group_roles_id')->index();
+            $table->boolean('personal_group')->default(false);
             $table->boolean('deleted')->default(false);
             $table->timestamps();
         });

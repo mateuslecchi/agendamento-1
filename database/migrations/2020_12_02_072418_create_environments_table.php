@@ -15,10 +15,11 @@ class CreateEnvironmentsTable extends Migration
     {
         Schema::create('environments', function (Blueprint $table) {
             $table->bigInteger('id', true);
-            $table->unsignedBigInteger('groups_id')->index();
-            $table->unsignedInteger('blocks_id')->index();
-            $table->boolean('deleted')->default(false);
             $table->string('name');
+            $table->boolean('automatic_approval')->default(false);
+            $table->unsignedInteger('blocks_id')->index();
+            $table->unsignedBigInteger('groups_id')->index();
+            $table->boolean('deleted')->default(false);
             $table->timestamps();
         });
     }
