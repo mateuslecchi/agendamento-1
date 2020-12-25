@@ -2,12 +2,14 @@
 
 namespace App\Http\Livewire\Environments;
 
-use App\Domain\Enum\GroupRoles;
 use App\Domain\Policy;
 use App\Models\Environment;
 use App\Traits\AuthenticatedUser;
 use App\Traits\AuthorizesRoleOrPermission;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class Show extends Component
@@ -15,23 +17,23 @@ class Show extends Component
     use AuthenticatedUser;
     use AuthorizesRoleOrPermission;
 
-    protected $listeners = [
-        'update_environment_display_content' => '$refresh'
-    ];
-
-    public function mount()
+    public function mount(): void
     {
         Policy::environments_show_mount();
     }
 
-    public function render()
+    public function render(): Factory|View|Application
     {
         return view('livewire.environments.show', [
-            'environments' => match (GroupRoles::getByValue($this->authGroup()->id)?->getValue()) {
-                GroupRoles::ADMIN()->getValue() => Environment::all(),
-                GroupRoles::MANAGER()->getValue() => Environment::byGroup($this->authGroup()),
-                default => new Collection()
-    }
+            'environments' => $this->environments()
         ]);
-}
+    }
+
+    protected function environments(): Collection
+    {
+        if ($this->authIsAdmin()) {
+            return Environment::all();
+        }
+        return Environment::byGroup($this->authGroup());
+    }
 }

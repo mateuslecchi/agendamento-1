@@ -60,6 +60,11 @@ class Group extends Model
         return self::query()->where(self::GROUP_ROLE_ID, '=', $roles->getValue())->get();
     }
 
+    public static function withoutPersonalGroup(): Collection
+    {
+        return self::query()->where(self::PERSONAL_GROUP, '=', false)->get();
+    }
+
     public function groupRole(): BelongsTo
     {
         return $this->belongsTo(GroupRole::class, 'group_roles_id');

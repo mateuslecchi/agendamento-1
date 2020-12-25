@@ -5,7 +5,7 @@
         <x-slot name="footer">
             <x-button type="button" wire:click="modalToggle">{{ \App\Traits\Fmt::text('label.btn.cancel')}} </x-button>
             <x-button.danger
-                wire:click="$emit('{{ \App\Http\Livewire\Users\Delete::CONFIRM_DELETION }}', {{ $user->id }})">{{ \App\Traits\Fmt::text('label.btn.yes-confirmation')}} </x-button.danger>
+                wire:click="$emit('{{ \App\Http\Livewire\Users\Delete::CONFIRM_DELETION }}')">{{ \App\Traits\Fmt::text('label.btn.yes-confirmation')}} </x-button.danger>
         </x-slot>
     </x-modal.confirmation>
 </div>

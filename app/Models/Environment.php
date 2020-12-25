@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Traits\Fmt;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -35,7 +36,15 @@ class Environment extends Model
 
     protected $keyType = 'integer';
 
-    protected $fillable = ['groups_id', 'blocks_id', 'name', 'deleted', 'created_at', 'updated_at'];
+    protected $fillable = [
+        'groups_id',
+        'blocks_id',
+        'name',
+        'automatic_approval',
+        'deleted',
+        'created_at',
+        'updated_at'
+    ];
 
     protected $with = [
         'block',
@@ -78,5 +87,10 @@ class Environment extends Model
     public function getBlockAttribute(): null | Block
     {
         return $this->block()?->first();
+    }
+
+    public function getFormattedNameAttribute(): string
+    {
+        return Fmt::text($this->name);
     }
 }

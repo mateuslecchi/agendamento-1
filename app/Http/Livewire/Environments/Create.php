@@ -2,21 +2,27 @@
 
 namespace App\Http\Livewire\Environments;
 
-use App\Domain\Enum\AdminGroup;
-use App\Domain\Enum\GroupRoles;
 use App\Domain\Policy;
 use App\Models\Block;
 use App\Models\Environment;
 use App\Models\Group;
 use App\Traits\AuthenticatedUser;
 use App\Traits\AuthorizesRoleOrPermission;
+use App\Traits\Fmt;
+use App\Traits\Make;
 use App\Traits\ModalCtrl;
 use App\Traits\NotifyBrowser;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class Create extends Component
 {
+    public const ID = 'e10c36bd-b78a-456f-ad1d-0aeeee70134c';
+
     use ModalCtrl;
     use NotifyBrowser;
     use AuthenticatedUser;
@@ -25,89 +31,103 @@ class Create extends Component
     public Environment $environment;
 
     protected $listeners = [
-        'show_modal_environment' => 'modalToggle'
+        self::ID => 'modalToggle'
     ];
 
-    public function render()
+    public function mount(): void
     {
-        return view('livewire.environments.create', [
-            'blocks' => Block::all(),
-            'groups' => Group::all()
+        Policy::environments_create_mount();
+        $this->initializeProperties();
+    }
+
+    protected function initializeProperties(): void
+    {
+        $this->environment = Make::environment([
+            Environment::AUTOMATIC_APPROVAL => false
         ]);
     }
 
-    public function mount()
+    public function render(): Factory|View|Application
     {
-        Policy::environments_create_mount();
-        $this->setEmptyEnvironment();
+        return view('livewire.environments.create', [
+            'blocks' => $this->validBlocksForSelection(),
+            'groups' => $this->validGroupsForSelection()
+        ]);
     }
 
-    protected function setEmptyEnvironment()
+    protected function validBlocksForSelection(): Collection
     {
-        $this->environment = Environment::make([]);
+        return Block::all();
     }
 
-    public function save()
+    protected function validGroupsForSelection(): Collection
     {
-        Policy::environments_create_save();
+        return Group::all();
+    }
 
-        if (!$this->modalIsOpen()) {
-            return;
-        }
-
+    protected function createNewEnvironment(): void
+    {
         $this->validate();
-
-        $userGroup = $this->authGroup();
-        if (is_null($userGroup)) {
-            $this->notifyError('text.save.error');
-            return;
-        }
-
-
-        $this->environment->groups_id = match ($userGroup->role?->id) {
-            GroupRoles::ADMIN()->getValue() => $this->environment->groups_id ? $this->environment->groups_id : AdminGroup::ID(),
-        default => $userGroup->id
-        };
-
-            $status = $this->environment->save();
-
-            $this->notifySuccessOrError(
-                status: $status,
-                success: __('text.save.success'),
-                error: __('text.save.error')
-            );
-
+        $this->sendBrowserNotification(
+            savedEnvironment: $this->saveEnvironment()
+        );
         $this->finally();
     }
 
-    protected function finally()
+    protected function sendBrowserNotification(bool $savedEnvironment): void
     {
-        $this->updateView();
+        $this->notifySuccessOrError(
+            status: $savedEnvironment,
+            success: Fmt::title('text.save.success'),
+            error: Fmt::title('text.save.error')
+        );
+    }
+
+    protected function saveEnvironment(): bool
+    {
+        if (is_null($this->environment->groups_id)) {
+            $this->environment->groups_id = $this->authGroup()->id;
+        }
+        return $this->environment->save();
+    }
+
+    protected function finally(): void
+    {
         $this->modalToggle();
-        $this->setEmptyEnvironment();
+        $this->initializeProperties();
     }
 
-    protected function updateView()
-    {
-        $this->emit('update_environment_display_content');
-    }
-
-    protected function rules()
+    protected function rules(): array
     {
         return [
             'environment.name' => ['required', 'min:2', 'max:255'],
-            'environment.blocks_id' => ['required', Rule::in(Block::all()->pluck('id')->all())],
-            'environment.groups_id' => ['sometimes', Rule::in(Group::all()->pluck('id')->all())]
+            'environment.blocks_id' => [
+                'required',
+                Rule::in($this->validBlocksForSelection()->pluck('id'))
+            ],
+            'environment.groups_id' => [
+                'sometimes',
+                Rule::in($this->validGroupsForSelection()->pluck('id'))
+            ],
+            'environment.automatic_approval' => ['sometimes', 'boolean']
         ];
     }
 
-    protected function messages()
+    protected function messages(): array
     {
         return [
-            'environment.blocks_id.required' => __('validation.required', ['attribute' => __('label.block')]),
-            'environment.blocks_id.in' => __('validation.in', ['attribute' => __('label.block')]),
-            'environment.groups_id.required' => __('validation.required', ['attribute' => __('label.group')]),
-            'environment.groups_id.in' => __('validation.in', ['attribute' => __('label.group')])
+            'environment.blocks_id.required' => Fmt::text('validation.required', [
+                'attribute' => 'label.block'
+            ]),
+            'environment.blocks_id.in' => Fmt::text('validation.in', [
+                'attribute' => 'label.block'
+            ]),
+            'environment.groups_id.required' => Fmt::text('validation.required', [
+                'attribute' => 'label.group'
+            ]),
+            'environment.groups_id.in' => Fmt::text('validation.in', [
+                'attribute' => 'label.group'
+            ])
         ];
     }
 }

@@ -4,6 +4,7 @@
 
 namespace App\Models;
 
+use App\Traits\Fmt;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,11 +31,13 @@ class Block extends Model
             ->orderBy('name');
     }
 
-    /**
-     * @return HasMany
-     */
     public function environments(): HasMany
     {
         return $this->hasMany(Environment::class, 'blocks_id');
+    }
+
+    public function getFormattedNameAttribute(): string
+    {
+        return Fmt::text($this->name);
     }
 }
