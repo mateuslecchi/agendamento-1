@@ -1,18 +1,22 @@
-<?php /** @noinspection PhpMissingFieldTypeInspection */
+<?php
 
 namespace App\Http\Livewire\Schedules;
 
-use App\Domain\Enum\GroupRoles;
+use App\Domain\Contracts\Frequency;
 use App\Domain\Enum\Situation;
-use App\Domain\Policy;
+use App\Domain\Schedule\Frequency\Diary;
+use App\Domain\Schedule\Frequency\Monthly;
+use App\Domain\Schedule\Frequency\NoRepeat;
+use App\Domain\Schedule\Frequency\Weekly;
 use App\Jobs\SendApprovedScheduleEmails;
 use App\Jobs\SendPendingScheduleEmails;
 use App\Models\Environment;
-use App\Models\Group;
 use App\Models\Schedule;
+use App\Rules\EndTimeBeforeStartTime;
 use App\Rules\WithoutSchedule;
 use App\Traits\AuthenticatedUser;
-use App\Traits\AuthorizesRoleOrPermission;
+use App\Traits\Fmt;
+use App\Traits\Make;
 use App\Traits\ModalCtrl;
 use App\Traits\NotifyBrowser;
 use Carbon\Carbon;
@@ -20,297 +24,289 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
-use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use Livewire\Component;
 
 class Create extends Component
 {
+    public const ID = '837801c6-0ac4-4e6f-be31-63f59091228e';
+
     use ModalCtrl;
-    use NotifyBrowser;
     use AuthenticatedUser;
-    use AuthorizesRoleOrPermission;
+    use NotifyBrowser;
 
-    public Group $group;
-    public Environment $environment;
-    public Schedule $schedule;
+    public int $env_id;
+    public Environment $env;
 
-    public int $selectedFrequency = 0;
-    public int $repetitions = 0;
+    public string $date;
+    public string $environment;
+    public string $block;
+    public string $startTime;
+    public string $endTime;
 
-    public array $frequencies = [
-        0 => 'label.frequency.no-repeat',
-        1 => 'label.frequency.diary',
-        2 => 'label.frequency.weekly',
-        3 => 'label.frequency.monthly'
-    ];
+    public int $frequency;
+    public int $repetitions;
 
-    public array $optionsFrequency = [
-        0 => [
-            'min' => 0,
-            'max' => 0,
-            'text' => ''
-        ],
-        1 => [
-            'min' => 2,
-            'max' => 30,
-            'text' => 'label.day'
-        ],
-        2 => [
-            'min' => 2,
-            'max' => 24,
-            'text' => 'label.week'
-        ],
-        3 => [
-            'min' => 2,
-            'max' => 6,
-            'text' => 'label.month'
-        ]
-    ];
+    public array $selectedFrequency;
 
     protected $listeners = [
-        'show_modal_schedule' => 'modalToggle',
-        'current_environment_selected' => 'load'
+        self::ID => 'construct'
+    ];
+
+    protected $rules = [
+        'date' => 'required',
+        'startTime' => 'required',
+        'endTime' => 'required',
+        'frequency' => 'required',
+        'repetitions' => 'required',
     ];
 
     public function render(): Factory|View|Application
     {
-        return view('livewire.schedules.create', [
-            'environment_name' => $this->environment?->name,
-            'block_name' => $this->environment?->block?->name,
-            'groups' => match ($this->authGroupRole()->getValue()) {
-                GroupRoles::USER()->getValue() => new Collection([$this->authGroup()]),
-                default => Group::all()
-            },
-            'optionsFrequency' => $this->optionsFrequency
-        ]);
+        return view('livewire.schedules.create')
+            ->with('frequencies', $this->frequencies());
     }
 
     public function mount(): void
     {
-        Policy::schedule_create_mount();
-
-        $this->setEmptyEnvironment();
-        $this->setEmptySchedule();
-        $this->setEmptyGroup();
+        $this->initializeProperties();
     }
 
-    private function setEmptyEnvironment(): void
+    public function initializeProperties(): void
     {
-        $this->environment = Environment::make([]);
+        $this->env_id = 0;
+        $this->env = Make::environment();
+        $this->date = '';
+        $this->environment = '';
+        $this->block = '';
+        $this->startTime = '';
+        $this->endTime = '';
+        $this->frequency = 0;
+        $this->repetitions = 0;
+        $this->selectedFrequency = [
+            'min' => 0,
+            'max' => 0,
+            'placeholder' => '',
+        ];
     }
 
-    private function setEmptySchedule(): void
+    public function construct(int $id, int $year, int $month, int $day): void
     {
-        $this->schedule = Schedule::make([]);
-    }
-
-    private function setEmptyGroup(): void
-    {
-        $this->group = Group::make(['id' => $this->authGroup()]);
-    }
-
-    public function load(Environment $environment): void
-    {
-        Policy::schedule_create_load();
-
-        $this->environment = $environment;
-        $this->group->id = $this->authGroup()->id;
+        $this->initializeProperties();
+        $date = Carbon::parse("$year-$month-$day");
+        $this->env_id = $id;
+        $this->env = ($env = Environment::find($id));
+        $this->date = $date->format('Y-m-d');
+        $this->environment = $env->name;
+        $this->block = $env->block->name;
         $this->modalToggle();
     }
 
-    public function save(): void
+    #[Pure]
+    public function frequencies(): array
     {
-        Policy::schedule_create_save();
+        return [
+            new NoRepeat(),
+            new Diary(),
+            new Weekly(),
+            new Monthly()
+        ];
+    }
 
-        if (!$this->modalIsOpen()) {
-            return;
+    public function selectedFrequency(): Frequency
+    {
+        if (!isset($this->frequency)) {
+            return new NoRepeat();
         }
-
-        $this->validate();
-
-        if ($this->repetitions) {
-            $this->runDry();
-        }
-
-        $status = true;
-        do {
-            $status =  $status && $this->saveSchedule();
-            if (!$status) {
-                $this->notifyError(__('label.custom.schedule.error-save', [
-                    'date' => Carbon::parse($this->schedule->date)->format('d/m/Y'),
-                    'start_time' => $this->schedule->start_time,
-                    'end_time' => $this->schedule->end_time
-                ]));
+        foreach ($this->frequencies() as $frequency) {
+            if ($frequency->id() === $this->frequency) {
+                return $frequency;
             }
-        } while ($this->nextSchedule());
-
-        if ($status) {
-            $this->notifySuccess('text.save.success');
-        } else {
-            $this->notifyAlert('text.save.alert');
         }
+        return new NoRepeat();
+    }
 
+    public function updatedFrequency(): void
+    {
+        $frequency = $this->selectedFrequency();
+        $this->repetitions = $frequency->min();
+        $this->selectedFrequency = [
+            'min' => $frequency->min(),
+            'max' => $frequency->max(),
+            'placeholder' => $frequency->placeholder(),
+        ];
+    }
+
+    public function createNewSchedule(): void
+    {
+        $this->basicValidate();
+        $this->dryRun();
+        $this->sendBrowserNotification(
+            $this->saveAll()
+        );
         $this->finally();
     }
 
-    protected function runDry(): void
+    protected function saveAll(): bool
     {
-        $count = $this->repetitions;
-        $current = $this->schedule;
+        $repetitions = $this->repetitions;
+        $current = $this->defaultSchedule();
+        $succeeded = true;
         do {
-            $schedule = $this->makeNextSchedule($current);
-            $this->validate([
-                'environment.id' => [
-                    new WithoutSchedule(
-                        $schedule->date,
-                        $schedule->start_time,
-                        $schedule->end_time,
-                    )
-                ]
-            ]);
-            $count--;
-        } while ($count >= 2);
+            $saved = $current->save();
+            $succeeded &= $saved;
+
+            $this->sendNotifications($saved, $current);
+
+            $current = $this->nextSchedule($current);
+            $repetitions--;
+        } while ($repetitions > 0);
+        return $succeeded;
     }
 
-    protected function makeNextSchedule(Schedule $current): Schedule
+    protected function sendNotifications(bool $saved, Schedule $schedule): void
     {
-        $new = new Schedule();
-        $new->for = $current->for;
-        $new->by = $current->by;
-        $new->environments_id = $current->environments_id;
-        $new->situations_id = $current->situations_id;
-        $new->start_time = $current->start_time;
-        $new->end_time = $current->end_time;
+        $this->sendBrowserNotificationIfFail(
+            saved: $saved,
+            schedule: $schedule
+        );
+        $this->sendEmailNotification(
+            succeeded: $saved,
+            schedule: $schedule
+        );
+    }
 
-        $new->date = match ($this->selectedFrequency) {
-            1 => Carbon::parse($current->date)->addDay()->format('Y-m-d'),
-            2 => Carbon::parse($current->date)->addWeek()->format('Y-m-d'),
-            3 => Carbon::parse($current->date)->addMonth()->format('Y-m-d'),
-            default => $current->date
+    protected function sendBrowserNotification(bool $succeeded): void
+    {
+        $this->notifySuccessOrError(
+            status: $succeeded,
+            success: 'text.schedule.save.succeeded',
+            error: 'text.schedule.save.error'
+        );
+    }
+
+    protected function sendEmailNotification(bool $succeeded, Schedule $schedule): void
+    {
+        if (!$succeeded) {
+            return;
+        }
+
+        match ($this->determineSituation()) {
+            Situation::CONFIRMED()->getValue() => SendApprovedScheduleEmails::dispatch($this->authUser(), $schedule),
+            default => SendPendingScheduleEmails::dispatch($schedule)
         };
-
-        return $new;
     }
 
-    protected function saveSchedule(): bool
+    protected function sendBrowserNotificationIfFail(bool $saved, Schedule $schedule): void
     {
-        $this->validate([
-            'environment.id' => [
-                new WithoutSchedule(
-                    $this->schedule->date,
-                    $this->schedule->start_time,
-                    $this->schedule->end_time,
-                )
-            ]
+        if ($saved) {
+            return;
+        }
+        $date = Carbon::parse($schedule->date);
+        $this->notifyError(Fmt::text('text.schedule.save.fail', [
+            'day' => $date->day,
+            'month' => $date->monthName,
+            'year' => $date->year
+        ]));
+    }
+
+    protected function basicValidate(): void
+    {
+        $this->validate();
+        $this->isValidTime();
+    }
+
+    protected function isValidTime(): void
+    {
+        $this->validateOnly('endTime', [
+            'endTime' => new EndTimeBeforeStartTime($this->startTime, $this->endTime)
         ]);
-
-        $this->schedule->for = $this->group->id ?? $this->authGroup()->id;
-
-        $this->schedule->by = $this->authGroup()->id;
-
-        $this->schedule->environments_id = $this->environment->id;
-
-        if (env('AUTOMATIC_APPROVAL', false)){
-            $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
-            $isApproved = true;
-        } else {
-            if ($this->authIsAdmin()) {
-                $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
-                $isApproved = true;
-
-            } else if ($this->authGroup()->id === $this->environment->group->id) {
-                $this->schedule->situations_id = Situation::CONFIRMED()->getValue();
-                $isApproved = true;
-            } else {
-                $this->schedule->situations_id = Situation::PENDING()->getValue();
-                $isApproved = false;
-            }
-        }
-
-
-        $status = $this->schedule->save();
-
-        if ($isApproved) {
-
-            SendApprovedScheduleEmails::dispatch($this->authUser(), $this->schedule);
-        } else {
-            SendPendingScheduleEmails::dispatch($this->schedule);
-        }
-        return $status;
     }
 
-    protected function nextSchedule(): bool
+    protected function dryRun(): void
     {
-        if (!$this->selectedFrequency || $this->repetitions < 2) {
-            return false;
+        $repetitions = $this->repetitions;
+        $frequency = $this->selectedFrequency();
+        $current = $this->defaultSchedule();
+
+        do {
+            $this->validateOnly('env_id', [
+                'env_id' => new WithoutSchedule($current->date, $current->start_time, $current->end_time),
+
+            ]);
+            $current = $this->nextSchedule($current);
+            $repetitions--;
+        } while ($repetitions >= $frequency->min());
+    }
+
+    protected function defaultSchedule(): Schedule
+    {
+        return Make::schedule([
+            Schedule::ENVIRONMENT_ID => $this->env->id,
+            Schedule::FOR => $this->authGroup()->id,
+            Schedule::BY => $this->authGroup()->id,
+            Schedule::DATE => $this->date,
+            Schedule::START_TIME => $this->startTime,
+            Schedule::END_TIME => $this->endTime,
+            Schedule::SITUATION_ID => $this->determineSituation()
+        ]);
+    }
+
+    protected function nextSchedule(Schedule $current): Schedule
+    {
+        $schedule = Make::schedule($this->scheduleToArrayWithoutID($current));
+        $schedule->date = match ($this->selectedFrequency()->id()) {
+            (new Diary())->id() => Carbon::parse($schedule->date)->addDay()->format('Y-m-d'),
+            (new Weekly())->id() => Carbon::parse($schedule->date)->addWeek()->format('Y-m-d'),
+            (new Monthly())->id() => Carbon::parse($schedule->date)->addMonth()->format('Y-m-d'),
+            default => $schedule->date
+        };
+        return $schedule;
+    }
+
+    protected function scheduleToArrayWithoutID(Schedule $schedule): array
+    {
+        $attributes = new Collection($schedule->toArray());
+        return $attributes->forget(Schedule::ID)->toArray();
+    }
+
+    protected function determineSituation(): int
+    {
+        if ($this->env->automatic_approval) {
+            return Situation::CONFIRMED()->getValue();
         }
+        if ($this->authGroup()->id === $this->env->groups_id) {
+            return Situation::CONFIRMED()->getValue();
+        }
+        return Situation::PENDING()->getValue();
+    }
 
-        $this->schedule = $this->makeNextSchedule($this->schedule);
-        $this->repetitions--;
+    protected function rules(): array
+    {
+        return [
+            'date' => 'required',
+            'startTime' => 'required',
+            'endTime' => 'required',
+            'frequency' => 'required',
+            'repetitions' => 'required',
+        ];
+    }
 
-        return true;
+    protected function messages(): array
+    {
+        return [
+            'startTime.required' => Fmt::text('validation.required', [
+                'attribute' => 'label.time.start'
+            ]),
+            'endTime.required' => Fmt::text('validation.required', [
+                'attribute' => 'label.time.end'
+            ])
+        ];
     }
 
     protected function finally(): void
     {
         $this->modalToggle();
-        $this->updateView();
-        $this->setEmptyEnvironment();
-        $this->setEmptySchedule();
-        $this->selectedFrequency = 0;
-        $this->repetitions = 0;
-    }
-
-    protected function updateView(): void
-    {
-        $this->emit('update_schedule_display_content');
-    }
-
-    #[ArrayShape(['schedule.date.required' => "mixed", 'schedule.date.after_or_equal' => "mixed", 'schedule.date.before_or_equal' => "mixed", 'schedule.start_time.required' => "mixed", 'schedule.end_time.required' => "mixed", 'group.id.required' => "mixed"])] protected function messages(): array
-    {
-        return [
-            'schedule.date.required' => __('validation.required', [
-                'attribute' =>  __('label.date')
-            ]),
-            'schedule.date.after_or_equal' => __('validation.after_or_equal', [
-                'attribute' =>  __('label.date'),
-                'date' => now()->format('d/m/Y')
-            ]),
-            'schedule.date.before_or_equal' => __('validation.before_or_equal', [
-                'attribute' =>  __('label.date'),
-                'date' => now()->addDays(90)->format('d/m/Y')
-            ]),
-            'schedule.start_time.required' => __('validation.required', [
-                'attribute' =>  __('label.time.start')
-            ]),
-            'schedule.end_time.required' => __('validation.required', [
-                'attribute' =>  __('label.time.end')
-            ]),
-            'group.id.required' => __('validation.required', [
-                'attribute' =>  __('label.for')
-            ]),
-        ];
-    }
-
-    #[ArrayShape(['schedule.date' => "string[]", 'schedule.start_time' => "string[]", 'schedule.end_time' => "string[]", 'group.id' => "string[]"])] protected function rules(): array
-    {
-        return [
-            'schedule.date' => [
-                'required',
-                'after_or_equal:' . date('Y-m-d'),
-                'before_or_equal:' . Carbon::parse(date('Y-m-d'))
-                    ->addDays(90)
-                    ->format('Y-m-d')
-            ],
-            'schedule.start_time' => [
-                'required'
-            ],
-            'schedule.end_time' => [
-                'required'
-            ],
-            'group.id' => [
-                'required'
-            ],
-        ];
+        $this->initializeProperties();
     }
 }

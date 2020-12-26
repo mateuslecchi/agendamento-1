@@ -9,22 +9,28 @@ use App\Models\Schedule as ScheduleModel;
 use App\Traits\AuthenticatedUser;
 use App\Traits\Fmt;
 use App\Traits\Make;
+use App\Traits\NotifyBrowser;
 use Asantibanez\LivewireCalendar\LivewireCalendar;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
 
 
 class Calendar extends LivewireCalendar
 {
     use AuthenticatedUser;
+    use NotifyBrowser;
 
     public Block $block;
     public Environment $environment;
 
-    public function mount($initialYear = null, $initialMonth = null, $weekStartsAt = null, $calendarView = null, $dayView = null, $eventView = null, $dayOfWeekView = null, $dragAndDropClasses = null, $beforeCalendarView = null, $afterCalendarView = null, $pollMillis = null, $pollAction = null, $dragAndDropEnabled = true, $dayClickEnabled = true, $eventClickEnabled = true, $extras = [])
+    public string $date;
+
+    public function mount($initialYear = null, $initialMonth = null, $weekStartsAt = null, $calendarView = null, $dayView = null, $eventView = null, $dayOfWeekView = null, $dragAndDropClasses = null, $beforeCalendarView = null, $afterCalendarView = null, $pollMillis = null, $pollAction = null, $dragAndDropEnabled = true, $dayClickEnabled = true, $eventClickEnabled = true, $extras = []): void
     {
         $this->initializeProperties();
         parent::mount($initialYear, $initialMonth, $weekStartsAt, $calendarView, $dayView, $eventView, $dayOfWeekView, $dragAndDropClasses, $beforeCalendarView, $afterCalendarView, $pollMillis, $pollAction, $dragAndDropEnabled, $dayClickEnabled, $eventClickEnabled, $extras);
@@ -61,14 +67,64 @@ class Calendar extends LivewireCalendar
     protected function rules(): array
     {
         return [
-            'block.id' => ['required'],
-            'environment.id' => ['required']
+            'block.id' => ['required', 'integer'],
+            'environment.id' => ['required', 'integer', 'min:1'],
+            'date' => [
+                'after_or_equal:' . now()->format('Y-m-d'),
+                'before_or_equal:' . now()->addDays(90)->format('Y-m-d')
+            ]
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'date.before_or_equal' => Fmt::text('validation.before_or_equal', [
+                'day' => now()->addDays(90)->day,
+                'month' => now()->addDays(90)->monthName,
+                'year' => now()->addDays(90)->year
+            ]),
+            'date.after_or_equal' => Fmt::text('validation.after_or_equal', [
+                'day' => now()->day,
+                'month' => now()->monthName,
+                'year' => now()->year
+            ]),
+            'environment.id.min' => 'validation.select-environment'
         ];
     }
 
     public function events(): Collection
     {
         return $this->formattedSchedules();
+    }
+
+    public function onDayClick($year, $month, $day): void
+    {
+        if ($messages = $this->isValidDate($year, $month, $day)) {
+            $this->sendBrowserNotification($messages);
+            return;
+        }
+        $this->emit(Create::ID, $this->environment->id, $year, $month, $day);
+    }
+
+    protected function sendBrowserNotification(RecursiveIteratorIterator|null $messages): void
+    {
+        if ($messages !== null) {
+            foreach ($messages as $message) {
+                $this->notifyAlert($message);
+            }
+        }
+    }
+
+    protected function isValidDate(int $year, int $month, int $day): RecursiveIteratorIterator|null
+    {
+        try {
+            $this->date = Carbon::parse("$year-$month-$day")->format('Y-m-d');
+            $this->validate();
+        } catch (ValidationException $validator) {
+            return new RecursiveIteratorIterator(new RecursiveArrayIterator($validator->errors()));
+        }
+        return null;
     }
 
     protected function formattedSchedules(): Collection

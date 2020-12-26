@@ -2,6 +2,8 @@
 
 namespace App\Rules;
 
+use App\Traits\Fmt;
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +11,7 @@ use InvalidArgumentException;
 
 class WithoutSchedule implements Rule
 {
+    private Carbon $current;
     private DateTime $start_date;
     private DateTime $end_date;
 
@@ -97,6 +100,7 @@ class WithoutSchedule implements Rule
             throw new InvalidArgumentException("$end_time = {$end_time}, is invalid.");
         }
 
+        $this->current = Carbon::parse($date);
         $this->start_date = DateTime::createFromFormat('Y-m-d H:i:s', "{$date} {$start_time}:00");
         $this->end_date = DateTime::createFromFormat('Y-m-d H:i:s', "{$date} {$end_time}:00");
     }
@@ -124,6 +128,11 @@ class WithoutSchedule implements Rule
 
     public function message(): string
     {
-        return __('text.rule.without-schedule.message', ['count' => $this->count]);
+        return Fmt::text('text.rule.without-schedule.message', [
+            'count' => $this->count,
+            'day' => $this->current->day,
+            'month' => $this->current->monthName,
+            'year' => $this->current->year,
+        ]);
     }
 }

@@ -8,9 +8,9 @@
     <div class="py-12">
         <livewire:schedules.calendar
             week-starts-at="1"
-            :day-click-enabled="false"
-            :event-click-enabled="false"
-            :drag-and-drop-enabled="false"
+            :day-click-enabled="true"
+            :event-click-enabled="true"
+            :drag-and-drop-enabled="true"
             calendar-view="livewire/schedules/calendar/calendar"
             day-of-week-view="livewire/schedules/calendar/day-of-week"
             before-calendar-view="livewire/schedules/calendar/before-calendar"
@@ -18,6 +18,7 @@
             day-view="livewire/schedules/calendar/day"
             pollMillis="2000"
         />
+        <livewire:schedules.create/>
     </div>
-    <x-notification />
+    <x-notification/>
 </x-app-layout>

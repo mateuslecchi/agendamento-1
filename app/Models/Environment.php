@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Schedule[] $schedules
  * @method static make(array $array)
  * @method static where(string $string, string $string1, int $id)
+ * @method static find(int $id)
  */
 class Environment extends Model
 {

@@ -6,6 +6,7 @@ use App\Models\Block;
 use App\Models\Environment;
 use App\Models\Group;
 use App\Models\GroupMember;
+use App\Models\Schedule;
 use App\Models\User;
 
 trait Make
@@ -28,6 +29,11 @@ trait Make
     public static function environment(array $attributes = []): Environment
     {
         return Environment::make($attributes);
+    }
+
+    public static function schedule(array $attributes = []): Schedule
+    {
+        return Schedule::make($attributes);
     }
 
     public static function block(array $attributes = []): Block

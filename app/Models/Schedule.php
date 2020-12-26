@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
-use phpDocumentor\Reflection\Types\Self_;
 
 /**
  * @property integer $id
@@ -31,17 +30,20 @@ use phpDocumentor\Reflection\Types\Self_;
  */
 class Schedule extends Model
 {
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
+
+    public const ID = 'id';
+    public const ENVIRONMENT_ID = 'environments_id';
+    public const FOR = 'for';
+    public const BY = 'by';
+    public const SITUATION_ID = 'situations_id';
+    public const DATE = 'date';
+    public const START_TIME = 'start_time';
+    public const END_TIME = 'end_time';
+
     protected $keyType = 'integer';
 
-    /**
-     * @var array
-     */
     protected $fillable = [
+        'id',
         'environments_id',
         'for',
         'by',
