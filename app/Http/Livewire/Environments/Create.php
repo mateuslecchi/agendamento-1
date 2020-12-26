@@ -65,7 +65,7 @@ class Create extends Component
         return Group::all();
     }
 
-    protected function createNewEnvironment(): void
+    public function createNewEnvironment(): void
     {
         $this->validate();
         $this->sendBrowserNotification(
