@@ -37,6 +37,7 @@ class Environment extends Model
     protected $keyType = 'integer';
 
     protected $fillable = [
+        'id',
         'groups_id',
         'blocks_id',
         'name',

@@ -46,8 +46,4 @@ Route::get(__('route.schedules.uri'), function () {
     return view('schedules');
 })->middleware(['auth'])->name(__('route.schedules.uri'));
 
-Route::get(__('route.schedules.calendar.uri'), function () {
-    return view('schedule-calendar');
-})->middleware(['auth'])->name(__('route.schedules.calendar.uri'));
-
 require __DIR__ . '/auth.php';

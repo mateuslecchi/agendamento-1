@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\Block;
 use App\Models\Environment;
 use App\Models\Group;
 use App\Models\GroupMember;
@@ -27,6 +28,11 @@ trait Make
     public static function environment(array $attributes = []): Environment
     {
         return Environment::make($attributes);
+    }
+
+    public static function block(array $attributes = []): Block
+    {
+        return Block::make($attributes);
     }
 
     public static function fakePersonalGroup(): Group

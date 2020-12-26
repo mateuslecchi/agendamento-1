@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
+use phpDocumentor\Reflection\Types\Self_;
 
 /**
  * @property integer $id
@@ -88,6 +89,34 @@ class Schedule extends Model
                 ?->pluck('id')
                 ->all()
         );
+    }
+
+    public static function betweenDatesBuilder(Builder $query, DateTime $start, DateTime $end): Builder
+    {
+        return $query
+            ->whereDate('date', '>=', $start)
+            ->whereDate('date', '<=', $end);
+    }
+
+    public static function byGroupForCalendar(Group $group, DateTime $start, DateTime $end): Collection
+    {
+        return self::betweenDatesBuilder(self::byGroupBuilder($group), $start, $end)
+            ->whereIn('situations_id', [\App\Domain\Enum\Situation::CONFIRMED()->getValue(), \App\Domain\Enum\Situation::PENDING()->getValue()])
+            ->get();
+    }
+
+    public static function byEnvironmentForCalendar(Environment $environment, DateTime $start, DateTime $end): Collection
+    {
+        return self::betweenDatesBuilder(self::byEnvironmentBuilder($environment), $start, $end)
+            ->whereIn('situations_id', [\App\Domain\Enum\Situation::CONFIRMED()->getValue(), \App\Domain\Enum\Situation::PENDING()->getValue()])
+            ->get();
+    }
+
+    public static function byGroupAndBlockForCalendar(Group $group, Block $block, DateTime $start, DateTime $end): Collection
+    {
+        return self::betweenDatesBuilder(self::byGroupAndBlockBuilder($group, $block), $start, $end)
+            ->whereIn('situations_id', [\App\Domain\Enum\Situation::CONFIRMED()->getValue(), \App\Domain\Enum\Situation::PENDING()->getValue()])
+            ->get();
     }
 
     public static function afterOrEqualDateCollection(Builder $query, DateTime $dateTime): Collection

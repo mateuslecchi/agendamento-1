@@ -2,7 +2,7 @@
      style="min-width: 10rem;">
 
     <p class="text-sm">
-        {{ Str::title($day->locale(app()->getLocale())->dayName) }}
+        {{ \App\Traits\Fmt::title($day->translatedFormat('l')) }}
     </p>
 
 </div>

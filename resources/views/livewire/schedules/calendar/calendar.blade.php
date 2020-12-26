@@ -9,7 +9,7 @@
         @includeIf($beforeCalendarView)
     </div>
 
-    <div class="flex">
+    <div class="flex mr-2 ml-2 sm:mr-5 sm:ml-5">
         <div class="overflow-x-auto w-full">
             <div class="inline-block min-w-full overflow-hidden">
 
