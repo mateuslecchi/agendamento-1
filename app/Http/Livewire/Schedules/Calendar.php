@@ -107,6 +107,11 @@ class Calendar extends LivewireCalendar
         $this->emit(Create::ID, $this->environment->id, $year, $month, $day);
     }
 
+    public function onEventClick($eventId): void
+    {
+        $this->emit(Details::ID, $eventId);
+    }
+
     protected function sendBrowserNotification(RecursiveIteratorIterator|null $messages): void
     {
         if ($messages !== null) {

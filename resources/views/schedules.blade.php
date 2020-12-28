@@ -19,6 +19,7 @@
             pollMillis="2000"
         />
         <livewire:schedules.create/>
+        <livewire:schedules.details/>
     </div>
     <x-notification/>
 </x-app-layout>
