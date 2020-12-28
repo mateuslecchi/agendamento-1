@@ -48,17 +48,20 @@ class Edit extends Create
         }
 
         $groups = Group::query()
-            ->where(Group::PERSONAL_GROUP, '=',false)
+            ->where(Group::PERSONAL_GROUP, '=', false)
             ->get();
 
         if (!$this->user?->group) {
             return $groups;
         }
 
-        return new Collection([
-            $this->user->group,
-            ...$groups
-        ]);
+        if ($this->user->group->personal_group) {
+            return new Collection([
+                $this->user->group,
+                ...$groups
+            ]);
+        }
+        return $groups;
     }
 
     protected function disableGroupEditing(): bool
@@ -134,9 +137,11 @@ class Edit extends Create
 
         $this->group = Group::find($this->group->id);
 
-        if (is_null($this->user->member)) {
+        if ($this->user->group->personal_group) {
+            $this->user->group->delete();
             return $this->associateUserWithGroup();
         }
+
         $this->user->member->groups_id = $this->group->id;
         return $this->user->member->save();
     }
