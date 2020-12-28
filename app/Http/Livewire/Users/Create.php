@@ -121,7 +121,10 @@ class Create extends Component
 
     protected function groupRole(): string
     {
-        return GroupRoles::getByValue($this->group->group_roles_id, GroupRoles::USER())->getName();
+        if (is_null($this->user?->group?->group_roles_id)) {
+            return GroupRoles::USER()->getName();
+        }
+        return GroupRoles::getByValue($this->user->group->group_roles_id)->getName();
     }
 
     protected function finally(): void
