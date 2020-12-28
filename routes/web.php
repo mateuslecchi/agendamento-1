@@ -21,10 +21,6 @@ Route::get(__('route.dashboard.uri'), function () {
     return view('dashboard');
 })->middleware(['auth'])->name(__('route.dashboard.uri'));
 
-Route::get(__('route.dashboard.calendar.uri'), function () {
-    return view('dashboard-calendar');
-})->middleware(['auth'])->name(__('route.dashboard.calendar.uri'));
-
 Route::get(__('route.groups.uri'), function () {
     return view('groups');
 })->middleware(['auth'])->name(__('route.groups.uri'));
