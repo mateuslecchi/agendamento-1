@@ -15,7 +15,7 @@
                 <select id="environment"
                         class="w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         wire:model="environment.id" {{ $environments->count() ? '' : 'disabled' }}>
-                    <option value="0" selected>{{ __('label.environment.all') }}</option>
+                    <option value="0" selected>{{ __('label.environments.all') }}</option>
                     @foreach($environments as $environment)
                         <option value="{{ $environment->id }}">{{ Str::ucfirst(__($environment->name)) }}
                             - {{ Str::ucfirst(__($environment->group->name)) }}</option>
@@ -34,7 +34,7 @@
         <x-table>
             <x-slot name="head">
                 <x-table.heading>{{ Str::ucfirst(__('label.name')) }}</x-table.heading>
-                <x-table.heading>{{ Str::ucfirst(__('label.environment')) }}</x-table.heading>
+                <x-table.heading>{{ Str::ucfirst(__('label.environments')) }}</x-table.heading>
                 <x-table.heading>{{ Str::ucfirst(__('label.block')) }}</x-table.heading>
                 <x-table.heading>{{ Str::ucfirst(__('label.date')) }}</x-table.heading>
                 <x-table.heading>{{ Str::ucfirst(__('label.time.schedule')) }}</x-table.heading>

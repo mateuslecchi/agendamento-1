@@ -2,7 +2,7 @@
     <form wire:submit.prevent="updateEnvironment">
         <x-modal.dialog wire:model.defer="show_modal">
             <x-slot
-                name="title">{{ \App\Traits\Fmt::title('label.custom.new', ['name' => 'label.environment']) }}</x-slot>
+                name="title">{{ \App\Traits\Fmt::title('label.custom.new', ['name' => 'label.environments']) }}</x-slot>
             <!-- content -->
             <x-slot name="content">
                 <x-auth-validation-errors class="mb-4" :errors="$errors"></x-auth-validation-errors>

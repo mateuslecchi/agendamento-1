@@ -36,6 +36,13 @@ class Block extends Model
         return $this->hasMany(Environment::class, 'blocks_id');
     }
 
+    public function countSchedules(): int
+    {
+        return $this->environments()->get()->map(static function (Environment $environment) {
+            return $environment->schedules()->count();
+        })->sum();
+    }
+
     public function getFormattedNameAttribute(): string
     {
         return Fmt::text($this->name);

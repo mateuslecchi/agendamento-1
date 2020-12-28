@@ -43,7 +43,7 @@ class Show extends Component
         }
 
         if (!$this->environment->id) {
-            $this->notifyAlert(__('validation.in', ['attribute' => __('label.environment')]));
+            $this->notifyAlert(__('validation.in', ['attribute' => __('label.environments')]));
             return;
         }
 
