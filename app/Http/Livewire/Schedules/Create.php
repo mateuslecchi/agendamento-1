@@ -97,8 +97,8 @@ class Create extends Component
         $this->env_id = $id;
         $this->env = ($env = Environment::find($id));
         $this->date = $date->format('Y-m-d');
-        $this->environment = $env->name;
-        $this->block = $env->block->name;
+        $this->environment = Fmt::text($env->name);
+        $this->block = Fmt::text($env->block->name);
         $this->modalToggle();
     }
 
