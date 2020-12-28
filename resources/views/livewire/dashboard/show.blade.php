@@ -88,7 +88,7 @@
                             @switch($schedule->situation?->id)
                                 @case(\App\Domain\Enum\Situation::CONFIRMED()->getValue())
                                 <x-button.danger type="button"
-                                                 wire:click="$emit('show_schedule_cancel_modal', {{ $schedule?->id }})">
+                                                 wire:click="$emit('{{ \App\Http\Livewire\Dashboard\Cancel::ID }}', {{ $schedule?->id }})">
                                     <x-icon.cancel class="w-4 h-4 mr-1">
                                         {{ \App\Traits\Fmt::text('label.btn.cancel') }}
                                     </x-icon.cancel>
@@ -96,7 +96,7 @@
                                 @break
                                 @case(\App\Domain\Enum\Situation::PENDING()->getValue())
                                 <x-button type="button"
-                                          wire:click="$emit('show_schedule_confirm_modal', {{ $schedule?->id }})">
+                                          wire:click="$emit('{{ \App\Http\Livewire\Dashboard\Analyze::ID }}', {{ $schedule?->id }})">
                                     <x-icon.clipboard class="w-4 h-4 mr-1">
                                         {{ \App\Traits\Fmt::text('label.btn.analyze') }}
                                     </x-icon.clipboard>

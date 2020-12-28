@@ -70,8 +70,6 @@
                 <div class="flex justify-center items-center">
                     <x-button.danger type="button"
                                      wire:click="$emit('{{ \App\Http\Livewire\Schedules\Details::CANCEL_SCHEDULE }}')">{{ \App\Traits\Fmt::text('label.btn.not-approve') }}</x-button.danger>
-                    <x-button type="button" class="ml-1"
-                              wire:click="modalToggle">{{ \App\Traits\Fmt::text('label.close') }}</x-button>
                 </div>
             @endif
         </x-slot>

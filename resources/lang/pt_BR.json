@@ -61,6 +61,7 @@
     "label.week": "semana",
     "label.month": "meses",
     "label.send": "enviar",
+    "label.analyze": "analise",
     "label.schedule.time": ":start às :end",
     "label.environments.all": "todos os ambiente",
     "label.confirm-password": "Confirme a Senha",
