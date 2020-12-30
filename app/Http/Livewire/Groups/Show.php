@@ -6,6 +6,9 @@ use App\Domain\Policy;
 use App\Models\Group;
 use App\Traits\AuthenticatedUser;
 use App\Traits\AuthorizesRoleOrPermission;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Show extends Component
@@ -13,16 +16,12 @@ class Show extends Component
     use AuthenticatedUser;
     use AuthorizesRoleOrPermission;
 
-    protected $listeners = [
-        'update_group_display_content' => '$refresh'
-    ];
-
     public function mount(): void
     {
         Policy::groups_show_mount();
     }
 
-    public function render()
+    public function render(): Factory|View|Application
     {
         return view('livewire.groups.show', [
             'groups' => Group::all()

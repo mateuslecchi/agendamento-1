@@ -6,13 +6,20 @@ use App\Domain\Enum\AdminGroup;
 use App\Domain\Policy;
 use App\Models\Group;
 use App\Traits\AuthorizesRoleOrPermission;
+use App\Traits\Fmt;
 use App\Traits\ModalCtrl;
 use App\Traits\NotifyBrowser;
-use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use JetBrains\PhpStorm\Pure;
 use Livewire\Component;
 
 class Delete extends Component
 {
+    public const ID = 'bc5cb39d-2f00-40ef-ad95-cd873f0539a6';
+    public const CONFIRM_DELETION = '863fd85f-26f8-4682-8c26-4b5241156720';
+
     use ModalCtrl;
     use NotifyBrowser;
     use AuthorizesRoleOrPermission;
@@ -20,105 +27,69 @@ class Delete extends Component
     public Group $group;
 
     protected $listeners = [
-        'show_group_exclusion_modal' => 'load',
-        'delete_group_confirmation' => 'delete'
+        self::ID => 'construct',
+        self::CONFIRM_DELETION => 'delete'
     ];
 
-    protected function rules(): array
-    {
-        return [
-            'group.id' => [
-                'sometimes',
-            ],
-            'group.name' => [
-                'sometimes',
-            ]
-        ];
-    }
-
-    public function render()
+    public function render(): Factory|View|Application
     {
         return view('livewire.groups.delete', [
             'group' => $this->group
         ]);
     }
 
-    public function mount()
+    public function mount(): void
     {
         Policy::groups_delete_mount();
-        $this->setEmptyGroup();
+        $this->initializeProperties();
     }
 
-    protected function setEmptyGroup()
+    protected function initializeProperties(): void
     {
         $this->group = Group::make([]);
     }
 
-    protected function updateView()
+    public function construct(Group $group): void
     {
-        $this->emit('update_group_display_content');
-    }
-
-    public function load(Group $group)
-    {
-        Policy::groups_delete_load();
-
-        if (is_null($group)) {
-            $this->notifyError('text.record-found-failed');
+        if ($this->isExcludingAdminGroup($group)) {
+            $this->sendAccessDeniedNotification();
             return;
         }
-
-        if ($group->id === AdminGroup::ID()->getValue()) {
-            Policy::groups_delete_admin();
-        }
-
         $this->group = $group;
         $this->modalToggle();
     }
 
-    public function delete(Group $group)
+    #[Pure]
+    protected function isExcludingAdminGroup(Group $group): bool
     {
-        Policy::groups_delete_save();
-        if (!$this->modalIsOpen()) {
-            return;
-        }
+        return $group->id === AdminGroup::ID()->getValue();
+    }
 
-        if (is_null($group)) {
-            $this->notifyError('text.record-found-failed');
-            $this->finally();
-            return;
-        }
+    protected function sendAccessDeniedNotification(): void
+    {
+        $this->notifyError('label.action.forbidden');
+    }
 
-        if ($group->id === AdminGroup::ID()->getValue()) {
-            Policy::groups_delete_admin();
-        }
-
-        if ($this->group->id !== $group->id) {
-            $this->notifyAlert('text.violation.integrity');
-            $this->finally();
-            return;
-        }
-
-        try {
-            $status = $this->group->delete();
-
-            $this->notifySuccessOrError(
-                status: $status,
-                success: 'text.delete.success',
-                error: 'text.delete.error'
-            );
-        } catch (Exception) {
-            $this->notifyError('text.delete.error');
-            $this->finally();
-        }
-
+    public function delete(): void
+    {
+        $this->sendBrowserNotification(
+            saved: $this->group->delete()
+        );
         $this->finally();
     }
 
-    protected function finally()
+    protected function sendBrowserNotification(bool $saved): void
     {
-        $this->updateView();
+        $this->notifySuccessOrError(
+            status: $saved,
+            success: Fmt::title('text.delete.success'),
+            error: Fmt::title('text.delete.error')
+        );
+    }
+
+    protected function finally(): void
+    {
         $this->modalToggle();
-        $this->setEmptyGroup();
+        $this->initializeProperties();
     }
 }

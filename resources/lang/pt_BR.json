@@ -100,6 +100,7 @@
     "text.custom.delete": "ao excluir \":name\" todos os dados associados também serão deletados, tem certeza que quer fazer isso?",
     "text.custom.delete.block": "ao excluir o bloco <b>:name</b>  serão excluidos <b>:countEnv ambientes</b> e <b>:countSchedule agendamentos</b>.<br>Tem certeza que deseja fazer isso?",
     "text.custom.delete.environment": "ao excluir o ambiente <b>:name</b>  serão excluidos <b>todos os agendamentos</b>.<br>Tem certeza que deseja fazer isso?",
+    "text.custom.delete.group": "ao excluir o grupo <b>:name</b>  serão excluídos <b>todos os ambientes</b> e <b>todos os agendamentos</b>.<br><span class='text-sm italic text-red-400'>Os usuários serão mantidos, mas as permissões serão revogadas para o perfil de utilização e se necessário os usuários serão adicionados a grupos individuais automaticamente.</span><br>Tem certeza que deseja fazer isso?",
     "text.custom.schedule.description": "<b>Local:</b> :environment - :block<br><b>Data:</b> :date<br><b>Horário:</b> :start_time às :end_time<br><b>Para:</b> :for<br>",
     "text.custom.cancel.confirmation": "tem certeza que deseja cancelar?",
     "text.custom.approve.confirmation": "tem certeza que deseja aprova?",

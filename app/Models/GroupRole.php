@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Fmt;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -29,5 +30,10 @@ class GroupRole extends Model
     public function groups()
     {
         return $this->hasMany('App\Models\Group', 'group_roles_id');
+    }
+
+    public function getFormattedNameAttribute(): string
+    {
+        return Fmt::text($this->name);
     }
 }
