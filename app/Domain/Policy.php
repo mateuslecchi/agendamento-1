@@ -298,4 +298,13 @@ class Policy
             Permission::SCHEDULE_CREATE()->getValue()
         ]);
     }
+
+    public static function dashboard_show_mount(): void
+    {
+        self::authRoleOrPermission([
+            GroupRoles::ADMIN()->getName(),
+            GroupRoles::MANAGER()->getValue(),
+            Permission::SCHEDULE_SHOW()
+        ]);
+    }
 }

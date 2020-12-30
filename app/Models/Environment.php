@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Environment extends Model
 {
+    public const ID = 'id';
     public const NAME = 'name';
     public const GROUP_ID = 'groups_id';
     public const BLOCK_ID = 'blocks_id';

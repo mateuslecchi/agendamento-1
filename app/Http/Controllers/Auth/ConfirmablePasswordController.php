@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Auth;
 class ConfirmablePasswordController extends Controller
 {
     /**
-     * Show the confirm password view.
+     * ShowDelete the confirm password view.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\View\View
      */
     public function show(Request $request)

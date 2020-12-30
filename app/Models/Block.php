@@ -19,9 +19,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Block extends Model
 {
-    /**
-     * @var array
-     */
+    public const ID = 'id';
+    public const NAME = 'name';
     protected $fillable = ['id', 'name', 'deleted', 'created_at', 'updated_at'];
 
     public function newQuery(): Builder
