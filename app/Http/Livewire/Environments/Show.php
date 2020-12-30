@@ -25,7 +25,8 @@ class Show extends Component
     public function render(): Factory|View|Application
     {
         return view('livewire.environments.show', [
-            'environments' => $this->environments()
+            'environments' => $this->environments(),
+            'isAdmin' => $this->authIsAdmin()
         ]);
     }
 
