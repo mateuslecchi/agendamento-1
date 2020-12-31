@@ -304,7 +304,7 @@ class Policy
         self::authRoleOrPermission([
             GroupRoles::ADMIN()->getName(),
             GroupRoles::MANAGER()->getValue(),
-            Permission::SCHEDULE_SHOW()
+            Permission::SCHEDULE_SHOW()->getValue()
         ]);
     }
 }
