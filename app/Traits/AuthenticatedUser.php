@@ -6,10 +6,6 @@ use App\Domain\Enum\GroupRoles;
 use App\Models\Group;
 use App\Models\GroupMember;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
-use League\CommonMark\Block\Element\ThematicBreak;
 use TypeError;
 
 trait AuthenticatedUser
@@ -26,24 +22,28 @@ trait AuthenticatedUser
     {
         try {
             return $this->authUser()->group;
-        } catch (TypeError)
-        {
-            $this->authUser()->syncRoles(GroupRoles::USER()->getName());
-
-            $group = Group::create([
-                'name' => Str::ucfirst(__("label.custom.violation-of-group-integrity", [
-                    'text' => $this->authUser()->name
-                ])),
-                'group_roles_id' => GroupRoles::USER()->getValue()
-            ]);
-
-            GroupMember::create([
-                'groups_id' => $group->id,
-                'users_id' => $this->authUser()->id,
-            ]);
-
+        } catch (TypeError) {
+            $this->ensureIntegrity_createPersonalGroup();
             return $this->authGroup();
         }
+    }
+
+    protected function ensureIntegrity_createPersonalGroup(): void
+    {
+        $this->authUser()->syncRoles(GroupRoles::USER()->getName());
+
+        $group = Make::group([
+            Group::NAME => Fmt::text($this->authUser()->name),
+            Group::GROUP_ROLE_ID => GroupRoles::USER()->getValue(),
+            Group::PERSONAL_GROUP => true
+        ]);
+
+        $group->save();
+
+        Make::groupMember([
+            'groups_id' => $group->id,
+            'users_id' => $this->authUser()->id
+        ])->save();
     }
 
     /** @noinspection PhpInconsistentReturnPointsInspection */

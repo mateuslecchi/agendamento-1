@@ -7,7 +7,7 @@ use Spatie\Permission\Exceptions\UnauthorizedException;
 
 trait AuthorizesRoleOrPermission
 {
-    public function authorizeRoleOrPermission($roleOrPermission, $guard = null)
+    public function authorizeRoleOrPermission($roleOrPermission, $guard = null): void
     {
         if (Auth::guard($guard)->guest()) {
             throw UnauthorizedException::notLoggedIn();
@@ -25,7 +25,7 @@ trait AuthorizesRoleOrPermission
         }
     }
 
-    public static function authRoleOrPermission($roleOrPermission, $guard = null)
+    public static function authRoleOrPermission($roleOrPermission, $guard = null): void
     {
         if (Auth::guard($guard)->guest()) {
             throw UnauthorizedException::notLoggedIn();

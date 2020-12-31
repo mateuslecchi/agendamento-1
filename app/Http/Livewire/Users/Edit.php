@@ -111,6 +111,7 @@ class Edit extends Create
     public function updateUser(): void
     {
         $this->validate();
+
         $this->sendBrowserNotification(
             savedUser: $this->saveUser(),
             hasGroup: $this->saveGroup(),
@@ -141,9 +142,15 @@ class Edit extends Create
             $this->user->group->delete();
             return $this->associateUserWithGroup();
         }
+        $this->user->member->delete();
+        return $this->associateUserWithGroup();
+    }
 
-        $this->user->member->groups_id = $this->group->id;
-        return $this->user->member->save();
+    protected function configurePermissions(): bool
+    {
+        $this->user = User::find($this->user->id);
+        $this->user->syncRoles($this->groupRole());
+        return $this->user->hasRole($this->groupRole());
     }
 
     protected function rules(): array
