@@ -19,20 +19,25 @@
                 @forelse($blocks as $block)
                     <x-table.row>
                         <x-table.cell>{{ $block->formattedName }}</x-table.cell>
-                        <x-table.cell>{{ \App\Traits\Fmt::text('label.custom.count-environment', ['count' => $block->environments()->count() , 'plural' =>  \App\Traits\Fmt::text('label.environments')], false) }}</x-table.cell>
+                        <x-table.cell
+                            class="text-center">{{ \App\Traits\Fmt::text('label.custom.count-environment', ['count' => $block->environments()->count() , 'plural' =>  \App\Traits\Fmt::text('label.environments')], false) }}</x-table.cell>
                         <x-table.cell>
-                            <x-button type="button"
-                                      wire:click="$emit('show_block_editing_modal', {{ $block->id }})">
-                                <x-icon.edit
-                                    class="w-4 h-4 mr-1">{{ \App\Traits\Fmt::text('label.btn.edit') }}</x-icon.edit>
-                            </x-button>
+                            <div class="flex justify-center">
+                                <x-button type="button"
+                                          wire:click="$emit('show_block_editing_modal', {{ $block->id }})">
+                                    <x-icon.edit
+                                        class="w-4 h-4 mr-1">{{ \App\Traits\Fmt::text('label.btn.edit') }}</x-icon.edit>
+                                </x-button>
+                            </div>
                         </x-table.cell>
                         <x-table.cell>
-                            <x-button.danger type="button"
-                                             wire:click="$emit('show_block_exclusion_modal', {{ $block->id }})">
-                                <x-icon.trash
-                                    class="w-4 h-4 mr-1">{{ \App\Traits\Fmt::text('label.btn.delete') }}</x-icon.trash>
-                            </x-button.danger>
+                            <div class="flex justify-center">
+                                <x-button.danger type="button"
+                                                 wire:click="$emit('show_block_exclusion_modal', {{ $block->id }})">
+                                    <x-icon.trash
+                                        class="w-4 h-4 mr-1">{{ \App\Traits\Fmt::text('label.btn.delete') }}</x-icon.trash>
+                                </x-button.danger>
+                            </div>
                         </x-table.cell>
                     </x-table.row>
                 @empty
