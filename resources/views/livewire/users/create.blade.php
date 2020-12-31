@@ -34,8 +34,16 @@
             </x-slot>
             <!-- footer -->
             <x-slot name="footer">
-                <x-button.danger type="button" wire:click="modalToggle">{{ App\Traits\Fmt::text('label.btn.cancel') }}</x-button.danger>
-                <x-button>{{ App\Traits\Fmt::text('label.btn.save') }}</x-button>
+                <x-button.danger type="button" wire:click="modalToggle">
+                    <x-icon.cancel class="w-4 h-4 mr-1">
+                        {{ App\Traits\Fmt::text('label.btn.cancel') }}
+                    </x-icon.cancel>
+                </x-button.danger>
+                <x-button>
+                    <x-icon.save class="w-4 h-4 mr-1">
+                        {{ App\Traits\Fmt::text('label.btn.save') }}
+                    </x-icon.save>
+                </x-button>
             </x-slot>
         </x-modal.dialog>
     </form>

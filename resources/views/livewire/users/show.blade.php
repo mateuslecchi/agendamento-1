@@ -1,10 +1,14 @@
 <div>
     <div class="py-4 px-4">
         <div class="flex justify-end">
-            <x-button type="button" wire:click="$emit('{{ App\Http\Livewire\Users\Create::ID }}')">{{ App\Traits\Fmt::text('label.btn.new') }}</x-button>
+            <x-button type="button" wire:click="$emit('{{ App\Http\Livewire\Users\Create::ID }}')">
+                <x-icon.plus class="w-4 h-4 mr-1">
+                    {{ App\Traits\Fmt::text('label.btn.new') }}
+                </x-icon.plus>
+            </x-button>
         </div>
     </div>
-    <div wire:poll>
+    <div wire:poll.1s>
         <x-table>
             <x-slot name="head">
                 <x-table.heading>{{ App\Traits\Fmt::text('label.name') }}</x-table.heading>
@@ -19,14 +23,26 @@
                     <x-table.row>
                         <x-table.cell>{{ $user->formattedName }}</x-table.cell>
                         <x-table.cell>{{ $user->formattedGroup }}</x-table.cell>
-                        <x-table.cell>{{ $user->formattedRole }}</x-table.cell>
+                        <x-table.cell class="text-center">{{ $user->formattedRole }}</x-table.cell>
                         <x-table.cell>
-                            <x-button type="button"
-                                      wire:click="$emit('{{ \App\Http\Livewire\Users\Edit::ID }}', {{ $user->id }})">{{ App\Traits\Fmt::text('label.btn.edit') }}</x-button>
+                            <div class="flex justify-center">
+                                <x-button type="button"
+                                          wire:click="$emit('{{ \App\Http\Livewire\Users\Edit::ID }}', {{ $user->id }})">
+                                    <x-icon.edit class="w-4 h-4 mr-1">
+                                        {{ App\Traits\Fmt::text('label.btn.edit') }}
+                                    </x-icon.edit>
+                                </x-button>
+                            </div>
                         </x-table.cell>
                         <x-table.cell>
-                            <x-button type="button"
-                                      wire:click="$emit('{{ \App\Http\Livewire\Users\Delete::ID }}', {{ $user->id }})">{{ App\Traits\Fmt::text('label.btn.delete') }}</x-button>
+                            <div class="flex justify-center">
+                                <x-button.danger type="button"
+                                                 wire:click="$emit('{{ \App\Http\Livewire\Users\Delete::ID }}', {{ $user->id }})">
+                                    <x-icon.trash class="w-4 h-4 mr-1">
+                                        {{ App\Traits\Fmt::text('label.btn.delete') }}
+                                    </x-icon.trash>
+                                </x-button.danger>
+                            </div>
                         </x-table.cell>
                     </x-table.row>
                 @empty

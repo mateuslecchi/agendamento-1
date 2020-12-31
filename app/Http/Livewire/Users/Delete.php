@@ -54,7 +54,7 @@ class Delete extends Component
     public function load(User $user): void
     {
         if ($this->selfDelete($user) || ($this->isAnAdministrator($user) && $this->hasUniqueAdministrator())) {
-            $this->notifyAlert(Fmt::title('text.violation.integrity'));
+            $this->notifyError(Fmt::text('label.action.forbidden'));
             return;
         }
         $this->user = $user;
