@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 
 # SISAEFI - Sistema de Agendamento de Espaço Físico
 
@@ -32,7 +32,8 @@ Certifique-se de ter as seguintes extensões para a versão correta do PHP (vers
 
 # Implementação
 
-1. Clone o repositório: https://github.com/Source-77/sisaefi.git
+1. Clone o repositório:
+    - [https://github.com/Sisaefi/sisaefi.git](https://github.com/Sisaefi/sisaefi.git)
 2. Dentro do diretório execute:
     - `composer install --optimize-autoloader --no-dev --ignore-platform-req=php`
 3. Faça uma copia do arquivo `.env.example` e renomeie para `.env`
