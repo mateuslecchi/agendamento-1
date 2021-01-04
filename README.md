@@ -36,7 +36,7 @@ Certifique-se de ter as seguintes extensões para a versão correta do PHP (vers
     - [https://github.com/Sisaefi/sisaefi.git](https://github.com/Sisaefi/sisaefi.git)
 2. Dentro do diretório execute:
     - `composer install --optimize-autoloader --no-dev --ignore-platform-req=php`
-3. Faça uma copia do arquivo `.env.example` e renomeie para `.env`
+3. Faça uma cópia do arquivo `.env.example` e renomeie para `.env`
     - Certifique-se de personaliza as informações solicitadas no arquivo.
     - Certifique-se de ter a database configurada em `DB_DATABASE` no `.env` devidamente criada.
 4. Dentro do diretório execute:
